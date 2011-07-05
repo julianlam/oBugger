@@ -1,0 +1,96 @@
+body {
+	font-family: arial, tahoma, verdana, sans;
+	font-size: 14px;
+	color: #333;
+}
+
+h3 {
+	margin: 0;
+	color: #666;
+}
+
+h4 {
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+	color: #000;
+}
+
+a:hover {
+	color: #aa0;
+}
+
+table#buglist, table#closed_bugs {
+	margin: auto;
+	width: 90%;
+}
+
+table#buglist th, table#closed_bugs th {
+	border-bottom: 2px solid #666;
+}
+
+table#buglist td, table#closed_bugs td {
+	border-bottom: 1px solid #333;
+}
+
+table#buglist td.actions, table#closed_bugs td.actions {
+	text-align: center;
+}
+
+table#buglist td.actions img, table#closed_bugs td.actions img {
+	width: 16px;
+}
+
+<?php
+	echo '
+/* States CSS */
+	';
+	foreach ($config['priorities'] as $priority) {
+		$priority[0] = strtolower(str_replace(" ", "_", $priority[0]));
+		echo '
+table#buglist tr.' . $priority[0] . ', table#closed_bugs tr.' . $priority[0] . ' {
+	background-color: #' . $priority[1] . ';
+}
+		';
+	}
+?>
+
+div#loginState {
+	float: right;
+	font-size: 10px;
+}
+
+div.navbar {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	width: 250px;
+	background: #e0e0e0;
+	margin: 0 auto;
+	padding: 5px;
+	text-align: center;
+}
+
+div.navbar img {
+	width: 16px; position: relative; top: 3px;
+}
+
+div.header {
+	border-bottom: 1px solid #666;
+	margin-bottom: 15px;
+}
+
+div.header input {
+	font-size: 10px;
+	background: #eee;
+	border: 0;
+	color: #666;
+}
+
+div.footer {
+	font-size: 10px;
+	text-align: center;
+	margin-top: 10px;
+}
