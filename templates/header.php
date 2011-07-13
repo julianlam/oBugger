@@ -4,6 +4,10 @@
 	<head>
 		<title>oBugger!</title>
 		<link rel="stylesheet" href="css/cssloader.php" type="text/css" />
+		<link rel="stylesheet" href="<?=JAVASCRIPT_PATH?>MUX.Dialog/MUX.Dialog.css" type="text/css" />
+		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>mootools-core-1.3.2.js"></script>
+		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>mootools-more-1.3.2.1.js"></script>
+		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>MUX.Dialog/MUX.Dialog.js"></script>
 	</head>
 	<body>
 		<div class="header">
@@ -13,6 +17,8 @@
 					else echo '<form action="?action=login" method="POST">Username: <input type="text" name="username" /> &nbsp; Password: <input type="password" name="password" /> &nbsp; <input type="submit" value="login" /></form>';
 				?>
 			</div>
-			<h3>oBugger!</h3>
+			<!--<h3>oBugger!</h3>-->
+			<a href="?action=showbugs"><img border="0" src="<?=IMG_PATH?>logo.svg" title="oBugger!" /></a>
 		</div>
+
 

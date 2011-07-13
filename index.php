@@ -4,31 +4,6 @@
 
 	if (!isset($_GET['action'])) $_GET['action'] = '';
 	switch($_GET['action']) {
-		case 'showbugs':
-			$db = db();
-			$params['bugs'] = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
-			$params['closed_bugs'] = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
-
-			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
-			else render('index/index.php', $params);
-		break;
-		case 'newbug':
-			$params['foo'] = 'bar?';
-			$params['priorities'] = $config['priorities'];
-			$params['states'] = $config['states'];
-			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
-			else render('index/index.php', $params);
-		break;
-		case 'filebug':
-			$db = db();
-			$params['status'] = $db->run(
-				"INSERT INTO bugs VALUES (DEFAULT, :name, :description, 'open', :priority, " . time() . ")",
-				array(":name" => $_POST['name'], ":description" => $_POST['description'], ":priority" => $_POST['priority'])
-			);
-
-			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
-			else render('index/index.php', $params);
-		break;
 		case 'editbug':
 			$db = db();
 			if (!$_POST['save']) {
@@ -72,32 +47,32 @@
 
 			header('Location: ' . APPLICATION_LINK . '?action=showbugs');
 		break;
-		case 'login':
-			$db = db();
-			$user = $db->run(
-				"SELECT * FROM users WHERE username=:username AND password=:password",
-				array(":username" => $_POST['username'], ":password" => md5($_POST['password']))
-			)->fetch();
-			if ($user) {
-				$params['status'] = 1;
-				$_SESSION['obugger'] = $user;
-				$GLOBALS['obugger'] = $user;
-			}
-			else $params['status'] = 0;
-
-			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
-			else render('index/index.php', $params);
-		break;
-		case 'logout':
-			unset($GLOBALS['obugger']);
-			unset($_SESSION['obugger']);
-			$params['status'] = 1;
-
-			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
-			else render('index/index.php', $params);
-		break;
 		default:
-			header('Location: ' . APPLICATION_LINK . '?action=showbugs');
+			$db = db();
+			if ($_GET['action'] == 'logout') {
+				unset($GLOBALS['obugger']);
+				unset($_SESSION['obugger']);
+			}
+			else if ($_GET['action'] == 'login') {
+				$user = $db->run(
+					"SELECT * FROM users WHERE username=:username AND password=:password",
+					array(":username" => $_POST['username'], ":password" => md5($_POST['password']))
+				)->fetch();
+				if ($user) {
+					$params['status'] = 1;
+					$_SESSION['obugger'] = $user;
+					$GLOBALS['obugger'] = $user;
+				}
+				else $params['status'] = 0;
+			}
+
+			$params['priorities'] = $config['priorities'];
+			$params['states'] = $config['states'];
+			$params['bugs'] = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+			$params['closed_bugs'] = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+
+			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
+			else render('index/index.php', $params);
 		break;
 	}
 ?>

@@ -15,11 +15,11 @@ h4 {
 
 a {
 	text-decoration: none;
-	color: #000;
+	color: #66b;
 }
 
 a:hover {
-	color: #aa0;
+	text-decoration: underline;
 }
 
 table#buglist, table#closed_bugs {
@@ -33,6 +33,8 @@ table#buglist th, table#closed_bugs th {
 
 table#buglist td, table#closed_bugs td {
 	border-bottom: 1px solid #333;
+	font-size: 11px;
+	padding: 0.5em;
 }
 
 table#buglist td.actions, table#closed_bugs td.actions {
@@ -89,8 +91,101 @@ div.header input {
 	color: #666;
 }
 
+div.header img {
+	height: 50px;
+}
+
 div.footer {
 	font-size: 10px;
 	text-align: center;
 	margin-top: 10px;
+}
+
+div.bug_form {
+	background: #fff;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	padding: 10px;
+	margin: 0 auto;
+}
+
+div.bug_form input {
+	border: none;
+	background: #efefef;
+	width: 726px;
+	margin-left: 2px;
+	font-weight: bold;
+	font-family: arial, tahoma, verdana, sans;
+	font-size: 12px;
+	padding-left: 5px;
+}
+
+div.bug_form input:hover {
+	background: #eef;
+}
+
+div.bug_form input:focus {
+	outline: none;
+	background: #eef;
+}
+
+div.bug_form textarea {
+	border: none;
+	background: #efefef;
+	height: 300px;
+	width: 721px;
+	margin-left: 2px;
+	font-family: arial, tahoma, verdana, sans;
+	font-size: 12px;
+	padding: 0 5px;
+	resize: none;
+}
+
+div.bug_form textarea:hover {
+	background: #eef;
+}
+
+div.bug_form textarea:focus {
+	outline: none;
+	background: #eef;
+}
+
+div.bug_form select {
+	border: none;
+	background: none;
+	outline: none;
+	font-size: 12px;
+	position: relative;
+	top: 1px;
+}
+
+div.bug_form label {
+	font-size: 11px;
+	font-weight: bold;
+	position: relative;
+	top: 1px;
+}
+
+div.bug_form button#submit {
+	float: right;
+	font-size: 11px;
+	font-weight: bold;
+	background: none;
+	border: 1px solid #666;
+	margin: 1em 0;
+	cursor: pointer;
+	width: 100px;
+	height: 25px;
+}
+
+div.bug_form label.overTxtLabel {
+	color: #999;
+	font-size: 11px;
+	font-weight: bold;
+	position: relative;
+	top: -1px;
 }
