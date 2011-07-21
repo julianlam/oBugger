@@ -99,7 +99,7 @@
 
 	// Pre-defined HTML for inclusion in bug viewer javascript
 	$view_bug_html = '
-		<div style="padding: 0 10px; font-size: 12px; height: 450px; width: 600px; overflow: auto;">
+		<div style="padding: 0 10px; font-size: 12px; max-height: 450px; width: 600px; overflow: auto;">
 			<p id="view_bug_desc"></p>
 			<hr />
 			<table>
