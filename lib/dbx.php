@@ -19,7 +19,17 @@
 			try {
 				parent::__construct($dsn, $user, $passwd);
 			} catch (Exception $e) {
-				die("My DB is dead");
+				die('
+					<div style="font-size: 12px; border-top: 1px solid #666; border-left: 1px solid #666; border-right: 1px solid #666; padding: 1em 3em 1em 1em; font-weight: bold; background: #ddd; width: 450px; margin: 200px auto 0 auto; font-family: tahoma, arial, verdana, sans;">
+						oBugger!
+					</div>
+					<div style="font-size: 12px; border-bottom: 1px solid #666; border-left: 1px solid #666; border-right: 1px solid #666; padding: 2em; background: #999; width: 450px; margin: 0 auto; text-align: center; font-family: tahoma, arial, verdana, sans;">
+						<img src="' . IMG_PATH . 'down.png" /><br /><br />
+						oBugger can&apos;t connect to the database server. Please contact the system administrator!
+						<br /><br />
+						<i>' . $dsn . '</i>
+					</div>
+				');
 			}
 		}
 		/**

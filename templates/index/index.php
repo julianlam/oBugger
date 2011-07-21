@@ -14,129 +14,110 @@
 <br clear="all" />
 
 <?php
-	if ($_GET['action'] == 'editbug') {
-		if ($params['status']) {
-			echo 'Changed saved!';
-		}
-		elseif ($params['bug']['bugID']) {
-?>
-			<h4>Edit Bug</h4>
-			<form action="?action=editbug" method="POST">
-				Name: <input type="text" name="name" value="<?=htmlentities(stripslashes($params['bug']['name']))?>" /><br />
-				Description:<br />
-				<textarea style="width: 90%;" name="description"><?=stripslashes($params['bug']['description'])?></textarea><br />
-				Priority:
-				<select name="priority">
-<?php
-		foreach($params['priorities'] as $priority) {
-			echo '
-				<option style="background: #' . $priority[1] . ';" value="' . strtolower(str_replace(" ", "_", $priority[0])) . '"' . ($params['bug']['priority'] == strtolower(str_replace(" ", "_", $priority[0])) ? ' selected' : '') . '>' . $priority[0] . '</option>
-			';
-		}
-?>
-				</select><br />
-				State:
-				<select name="state">
-<?php
-		foreach($params['states'] as $state) {
-			echo '
-				<option value="' . strtolower(str_replace(" ", "_", $state)) . '"' . ($params['bug']['state'] == strtolower(str_replace(" ", "_", $state)) ? ' selected' : '') . '>' . $state . '</option>
-			';
-		}
-?>
-				</select><br />
-				<small>Don't forget to include reproduction steps!</small>
-				<input type="hidden" name="bugID" value="<?=$params['bug']['bugID']?>" />
-				<input type="hidden" name="save" value="1" />
-				<input type="submit" value="Save changes" />
-			</form>
-<?php
-		}
-	}
-	else {
-		echo '
-			<h4>Open Bugs</h4>
-		';
-		echo '
-			<table id="buglist">
-				<thead>
-					<tr style="text-align: left;">
-						<th>bugID</th>
-						<th>Name</th>
-						<th>Description</th>
-						<th>State</th>
-						<th>Priority</th>
-						<th>Filed Date</th>
-		';
-		if (isLoggedIn()) echo '	<th>Actions</th>';
-		echo '
-					</tr>
-				</thead>
-				<tbody id="buglist_body">
-		';
-		foreach ($params['bugs'] as $bug) {
-			$bug['priorityCSS'] = strtolower(str_replace(" ", "_", $bug['priority']));
-			echo '
-					<tr id="bug_' . $bug['bugID'] . '" class="' . $bug['priorityCSS'] . '">
-						<td>' . $bug['bugID'] . '</td>
-						<td>' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-						<td>' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
-						<td>' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
-						<td>' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-						<td>' . date("r", $bug['fileDate']) . '</td>
-			';
-			if (isLoggedIn()) {
-				echo '
-						<td class="actions">
-							<a href="#" onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
-						</td>
-				';
-			}
-			echo '
-					</tr>
-			';
-		}
-		echo '
-				</tbody>
-			</table>
-
-			<h4>Closed Bugs</h4>
-			<table id="closed_bugs">
+	echo '
+		<h4>Open Bugs</h4>
+	';
+	echo '
+		<table id="buglist">
+			<thead>
 				<tr style="text-align: left;">
 					<th>bugID</th>
 					<th>Name</th>
 					<th>Description</th>
+					<th>State</th>
 					<th>Priority</th>
 					<th>Filed Date</th>
-		';
-		if (isLoggedIn()) echo '<th>Actions</th>';
+	';
+	if (isLoggedIn()) echo '	<th>Actions</th>';
+	echo '
+				</tr>
+			</thead>
+			<tbody id="buglist_body">
+	';
+	foreach ($params['bugs'] as $bug) {
+		$bug['priorityCSS'] = strtolower(str_replace(" ", "_", $bug['priority']));
 		echo '
-				</tr>
-		';
-		foreach ($params['closed_bugs'] as $bug) {
-			echo '
-				<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
-					<td>' . $bug['bugID'] . '</td>
-					<td>' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-					<td>' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
-					<td>' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+				<tr id="bug_' . $bug['bugID'] . '" class="' . $bug['priorityCSS'] . '">
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(str_replace("\n", " / ", trim(stripslashes($bug['description']))),0,63) . '...' : str_replace("\n", " / ", trim(stripslashes($bug['description'])))) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 					<td>' . date("r", $bug['fileDate']) . '</td>
-			';
-			if (isLoggedIn()) {
-				echo '
-						<td class="actions">
-							<a href="?action=reopenbug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'reopen.svg" title="Re-Open Bug" /></a>
-						</td>
-				';
-			}
+		';
+		if (isLoggedIn()) {
 			echo '
-				</tr>
+					<td class="actions">
+						<a href="#" onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
+					</td>
 			';
 		}
 		echo '
-			</table>
+				</tr>
 		';
 	}
+	echo '
+			</tbody>
+		</table>
+
+		<h4>Closed Bugs</h4>
+		<table id="closed_bugs">
+			<tr style="text-align: left;">
+				<th>bugID</th>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Priority</th>
+				<th>Filed Date</th>
+	';
+	if (isLoggedIn()) echo '<th>Actions</th>';
+	echo '
+			</tr>
+	';
+	foreach ($params['closed_bugs'] as $bug) {
+		echo '
+			<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
+				<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
+				<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
+				<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
+				<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+				<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
+		';
+		if (isLoggedIn()) {
+			echo '
+					<td class="actions">
+						<a href="?action=reopenbug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'reopen.svg" title="Re-Open Bug" /></a>
+					</td>
+			';
+		}
+		echo '
+			</tr>
+		';
+	}
+	echo '
+		</table>
+	';
+
+	// Pre-defined HTML for inclusion in bug viewer javascript
+	$view_bug_html = '
+		<div style="padding: 0 10px; font-size: 12px; height: 450px; width: 600px; overflow: auto;">
+			<p id="view_bug_desc"></p>
+			<hr />
+			<table>
+				<tr>
+					<td><b>Priority</b></td>
+					<td id="view_bug_priority"></td>
+				</tr>
+				<tr>
+					<td><b>State</b></td>
+					<td id="view_bug_state"></td>
+				</tr>
+				<tr>
+					<td><b>Filed Date</b></td>
+					<td id="view_bug_fileDate"></td>
+				</tr>
+			</table>
+		</div>
+	';
 ?>
 
 <script type="text/javascript">
@@ -237,7 +218,7 @@
 				'<select id="priority">'+
 				'<?php foreach($params['priorities'] as $priority) {echo '<option style="background: #' . $priority[1] . ';" value="' . strtolower(str_replace(" ", "_", $priority[0])) . '"' . ($priority[0] == "Medium" ? ' selected' : '') . '>' . $priority[0] . '</option>';}?>' +
 				'</select>'+
-				' | <label id="state_label" for="state">State</label>'+
+				' &nbsp; | &nbsp; <label id="state_label" for="state">State</label>'+
 				'<select id="state">'+
 				'<?php foreach($params['states'] as $state) {echo '<option value="' . strtolower(str_replace(" ", "_", $state)) . '">' . $state . '</option>';}?>' +
 				'</select>'+
@@ -314,12 +295,45 @@
 				editFormDesc.reposition();
 			}
 		});
-		$('new_bug_toggler').addEvent('click', function() {
-			/*newstyle = ($('bug_form').getStyle('display') == 'none' ? 'block' : 'none');
-			$('bug_form').setStyle('display', newstyle);*/
+
+		if ($('new_bug_toggler')) $('new_bug_toggler').addEvent('click', function() {
 			add_form.open();
 		});
+
+		view_bug = new MUX.Dialog({
+			loader: 'none',
+			title: 'Title',
+			autoOpen: false,
+			content: '<?=APPLICATION_LINK?>ajax/bugs.php?action=render_bug_viewer',
+			onOpen: function() {
+				view_bug.header.getElement('.mux-dialog-header-title').innerHTML = '';
+				new Request.JSON({
+					url: '<?=APPLICATION_LINK?>ajax/bugs.php',
+					onSuccess: function(data) {
+						if (data['status'] == 1) {
+							view_bug.content.innerHTML = <?=json_encode($view_bug_html)?>;
+							$('view_bug_desc').innerHTML = data['data']['description'].replace(/\n/g, '<br>');
+							$('view_bug_priority').innerHTML = data['data']['priority_nice'];
+							$('view_bug_state').innerHTML = data['data']['state_nice'];
+							var fileDate = new Date(data['data']['fileDate'] * 1000);
+							$('view_bug_fileDate').innerHTML = fileDate;
+							view_bug.header.getElement('.mux-dialog-header-title').innerHTML = data['data']['name'];
+							view_bug.position();
+						}
+					}
+				}).send('action=getbug&bugID='+selectedBugID);
+			},
+			onClose: function() {
+				view_bug.content.innerHTML = '<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">';
+			}
+		});
 	});
+
+	function viewBug(bugID) {
+		selectedBugID = bugID;
+		view_bug.open();
+	}
+
 	function editBug(bugID) {
 		selectedBugID = bugID;
 		edit_form.open();

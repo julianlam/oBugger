@@ -27,6 +27,10 @@ table#buglist, table#closed_bugs {
 	width: 90%;
 }
 
+table#buglist tr, table#closed_bugs tr {
+	cursor: pointer;
+}
+
 table#buglist th, table#closed_bugs th {
 	border-bottom: 2px solid #666;
 }
