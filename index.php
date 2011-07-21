@@ -49,27 +49,29 @@
 		break;
 		default:
 			$db = db();
+			include 'lib/auth.class.php';
+			$auth = new Auth();
+
 			if ($_GET['action'] == 'logout') {
-				unset($GLOBALS['obugger']);
-				unset($_SESSION['obugger']);
+				$auth->logout();
 			}
 			else if ($_GET['action'] == 'login') {
-				$user = $db->run(
-					"SELECT * FROM users WHERE username=:username AND password=:password",
-					array(":username" => $_POST['username'], ":password" => md5($_POST['password']))
-				)->fetch();
+				$user = $auth->login($_POST['username'], $_POST['password']);
 				if ($user) {
 					$params['status'] = 1;
-					$_SESSION['obugger'] = $user;
-					$GLOBALS['obugger'] = $user;
+					$params['loggedIn'] = 1;
 				}
 				else $params['status'] = 0;
 			}
 
-			$params['priorities'] = $config['priorities'];
-			$params['states'] = $config['states'];
-			$params['bugs'] = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
-			$params['closed_bugs'] = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+			$params['config'] = array("anon_access" => $config['security']['anon_access'], "auth_access" => $config['security']['auth_access']);
+
+			if (in_array('r', $config['security']['anon_access']) || ($params['loggedIn'] == 1 && in_array('r', $config['security']['auth_access']))) {
+				$params['priorities'] = $config['priorities'];
+				$params['states'] = $config['states'];
+				$params['bugs'] = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+				$params['closed_bugs'] = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+			}
 
 			if (isset($_GET['slim'])) render('index/index.php', $params, 0);
 			else render('index/index.php', $params);

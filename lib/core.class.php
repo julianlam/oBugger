@@ -46,11 +46,6 @@ function db() {
   return $db;
 }
 
-function isLoggedIn() {
-	if (isset($GLOBALS['obugger']['accountID']) && $GLOBALS['obugger']['accountID'] > 0) return 1;
-	else return 0;
-}
-
 class web {
 	public $middleware = array();
 	public $result = null;

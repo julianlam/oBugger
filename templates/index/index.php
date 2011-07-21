@@ -2,7 +2,7 @@
 	<span style="font-size: 10px;">Navigation:</span><br />
 	<a href="?action=showbugs"><img src="<?=IMG_PATH?>buglist.svg" title="Show Buglist" /> Buglist</a> 
 	<?php
-		if (isLoggedIn()) {
+		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 	?>
 	| <a href="#" id="new_bug_toggler"><img src="<?=IMG_PATH?>newbug.svg" title="File new Bug" /> File new Bug</a>
 	<?php
@@ -28,7 +28,7 @@
 					<th>Priority</th>
 					<th>Filed Date</th>
 	';
-	if (isLoggedIn()) echo '	<th>Actions</th>';
+	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '	<th>Actions</th>';
 	echo '
 				</tr>
 			</thead>
@@ -45,7 +45,7 @@
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 					<td>' . date("r", $bug['fileDate']) . '</td>
 		';
-		if (isLoggedIn()) {
+		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
 					<td class="actions">
 						<a href="#" onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
@@ -69,7 +69,7 @@
 				<th>Priority</th>
 				<th>Filed Date</th>
 	';
-	if (isLoggedIn()) echo '<th>Actions</th>';
+	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th>Actions</th>';
 	echo '
 			</tr>
 	';
@@ -82,7 +82,7 @@
 				<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 				<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
 		';
-		if (isLoggedIn()) {
+		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
 					<td class="actions">
 						<a href="?action=reopenbug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'reopen.svg" title="Re-Open Bug" /></a>
@@ -325,6 +325,14 @@
 			},
 			onClose: function() {
 				view_bug.content.innerHTML = '<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">';
+			},
+			buttons: [{
+				title: 'Modify this bug',
+				style: 'link',
+				click: 'close'
+			}],
+			onClose: function() {
+				editBug(selectedBugID);
 			}
 		});
 	});
