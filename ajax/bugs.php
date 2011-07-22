@@ -13,7 +13,7 @@
 		break;
 		case 'render_bug_viewer':
 			echo '
-				<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">
+				<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="' . IMG_PATH . 'loader.gif">
 			';
 		break;
 		case 'newbug':

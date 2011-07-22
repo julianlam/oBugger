@@ -329,9 +329,9 @@
 			buttons: [{
 				title: 'Modify this bug',
 				style: 'link',
-				click: 'close'
+				click: 'submit'
 			}],
-			onClose: function() {
+			onSubmit: function() {
 				editBug(selectedBugID);
 			}
 		});
