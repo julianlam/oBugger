@@ -63,6 +63,7 @@
 				}
 				else $params['status'] = 0;
 			}
+			else $params['loggedIn'] = $auth->isLoggedIn();
 
 			$params['config'] = array("anon_access" => $config['security']['anon_access'], "auth_access" => $config['security']['auth_access']);
 

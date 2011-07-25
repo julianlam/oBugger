@@ -43,7 +43,7 @@
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(str_replace("\n", " / ", trim(stripslashes($bug['description']))),0,63) . '...' : str_replace("\n", " / ", trim(stripslashes($bug['description'])))) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-					<td>' . date("r", $bug['fileDate']) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
@@ -62,25 +62,28 @@
 
 		<h4>Closed Bugs</h4>
 		<table id="closed_bugs">
-			<tr style="text-align: left;">
-				<th>bugID</th>
-				<th>Name</th>
-				<th>Description</th>
-				<th>Priority</th>
-				<th>Filed Date</th>
+			<thead>
+				<tr style="text-align: left;">
+					<th>bugID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Priority</th>
+					<th>Filed Date</th>
 	';
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th>Actions</th>';
 	echo '
-			</tr>
+				</tr>
+			</thead>
+			<tbody>
 	';
 	foreach ($params['closed_bugs'] as $bug) {
 		echo '
-			<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
-				<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
-				<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-				<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
-				<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-				<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
+				<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
@@ -90,7 +93,8 @@
 			';
 		}
 		echo '
-			</tr>
+				</tr>
+			</tbody>
 		';
 	}
 	echo '
