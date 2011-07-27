@@ -81,7 +81,7 @@
 				<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,63) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,62) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
 		';
@@ -170,17 +170,21 @@
 							$('name').disabled = 0;
 							$('description').disabled = 0;
 							$('priority').disabled = 0;
-							add_form.close();
 							new Element('tr', {
-								html:   '<td>'+data['bugID']+'</td>'+
-									'<td>'+data['name']+'</td>'+
-									'<td>'+data['description']+'</td>'+
-									'<td>Open</td>'+
-									'<td>'+data['priority']+'</td>'+
-									'<td>'+data['date']+'</td>'+
+								html:   '<td onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 32 ? data['name'].substr(0, 29) + '...' : data['name']) + '</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">' + (data['description'].length > 65 ? data['description'].substr(0, 62) + '...' : data['description']) +'</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">Open</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
 									'<td class="actions"><a href="?action=editbug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
 								'class': data['priority'].replace(" ", "_").toLowerCase()
 							}).inject('buglist_body', 'top');
+							$('name').value = '';
+							$('description').value = '';
+							$('priority').selectedIndex = 2;
+							$('new_bug_toggler').focus();
+							add_form.close();
 						}
 					}
 				}).send('action=newbug&payload='+payload);
@@ -253,9 +257,16 @@
 					url: '<?=APPLICATION_LINK?>ajax/bugs.php',
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
+							// Re-enable form
 							$('name').disabled = 0;
 							$('description').disabled = 0;
 							$('priority').disabled = 0;
+
+							// Update the bug list with the new values
+							var cells = $('bug_'+selectedBugID).getElements('td');
+							cells[1].innerHTML = ($('name').value.length > 32 ? $('name').value.substr(0,29) + '...' : $('name').value);
+							cells[2].innerHTML = ($('description').value.length > 65 ? $('description').value.substr(0,62) + '...' : $('description').value);
+
 							edit_form.close();
 						}
 					}
@@ -337,6 +348,7 @@
 			}],
 			onSubmit: function() {
 				editBug(selectedBugID);
+				view_bug.close();
 			}
 		});
 	});
