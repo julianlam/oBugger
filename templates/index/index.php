@@ -124,8 +124,14 @@
 	';
 
 	$settings_modal_html = '
-		Username: <span class="immutable" id="settings_username"></span><br />
-		Password: <button type="button" id="change_password">Change Password</button>
+		Username: <span class="immutable" id="settings_username"></span><br /><br />
+		Password: <button type="button" class="mux-button mux-button-rectangle" id="change_password" onclick="password_change_modal.open();">Change Password</button>
+	';
+
+	$password_change_html = '
+		Current Password: <input class="borderless" type="text" id="current_password" /><br /><br />
+		New Password: <input class="borderless" type="text" id="new_password" /><br /><br />
+		... and again: <input class="borderless" type="text" id="repeat_password" />
 	';
 ?>
 
@@ -363,18 +369,53 @@
 			autoOpen: false,
 			content: new Element('div', {
 				html: <?=json_encode($settings_modal_html)?>,
+				style: 'padding: 10px; font-size: 12px;'
 			}),
 			onOpen: function() {
 				new Request.JSON({
 					url: '<?=APPLICATION_LINK?>ajax/user.php',
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
-							alert(data['data'].toSource());	// odd?
 							$('settings_username').innerHTML = data['data']['username'];
 						}
 					}
 				}).send('action=getSettings');
 			}
+		});
+
+		password_change_modal = new MUX.Dialog({
+			loader: 'none',
+			title: 'Change Password',
+			autoOpen: false,
+			content: new Element('div', {
+				html: <?=json_encode($password_change_html)?>,
+				style: 'padding: 10px; font-size: 12px;'
+			}),
+			onOpen: function() {
+				settings_modal.close();
+			},
+			onSubmit: function() {
+				if ($('new_password').value == $('repeat_password').value) {
+					payload = {};
+					payload.current = $('current_password').value;
+					payload.new = $('new_password').value;
+					new Request.JSON({
+						url: '<?=APPLICATION_LINK?>ajax/user.php',
+						onSuccess: function(data) {
+							if (data['status'] == 1) {
+								password_change_modal.close();
+							}
+						}
+					}).send('action=changePassword&payload='+JSON.encode(payload));
+				}
+			},
+			onClose: function() {
+				settings_modal.open();
+			},
+			buttons: [{
+				title: 'Change Password',
+				click: 'submit'
+			}]
 		});
 	});
 

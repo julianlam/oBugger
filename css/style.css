@@ -92,7 +92,7 @@ div.header {
 	margin-bottom: 15px;
 }
 
-div.header input {
+div.header input, input.borderless {
 	font-size: 10px;
 	background: #eee;
 	border: 0;
@@ -200,5 +200,7 @@ div.bug_form label.overTxtLabel {
 
 span.immutable {
 	font-size: 12px;
+	font-weight: bold;
 	white-space: pre;
 }
+
