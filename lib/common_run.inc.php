@@ -14,6 +14,6 @@
 		if ($content==1) include "templates/footer.php";
 	}
 
-	// Save the user's lingobuddy information to the PHP session
+	// Save the user's obugger information to the PHP session
 	if (isset($_SESSION['obugger'])) $GLOBALS['obugger'] = $_SESSION['obugger'];
 ?>

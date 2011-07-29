@@ -48,7 +48,7 @@
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
 					<td class="actions">
-						<a href="#" onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
+						<a onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
 					</td>
 			';
 		}
@@ -122,6 +122,11 @@
 			</table>
 		</div>
 	';
+
+	$settings_modal_html = '
+		Username: <span class="immutable" id="settings_username"></span><br />
+		Password: <button type="button" id="change_password">Change Password</button>
+	';
 ?>
 
 <script type="text/javascript">
@@ -177,7 +182,7 @@
 									'<td onclick="viewBug('+data['bugID']+');">Open</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
-									'<td class="actions"><a href="?action=editbug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
+									'<td class="actions"><a onclick="editBug(' + data['bugID'] + ');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
 								'class': data['priority'].replace(" ", "_").toLowerCase()
 							}).inject('buglist_body', 'top');
 							$('name').value = '';
@@ -349,6 +354,26 @@
 			onSubmit: function() {
 				editBug(selectedBugID);
 				view_bug.close();
+			}
+		});
+
+		settings_modal = new MUX.Dialog({
+			loader: 'none',
+			title: 'Account Settings',
+			autoOpen: false,
+			content: new Element('div', {
+				html: <?=json_encode($settings_modal_html)?>,
+			}),
+			onOpen: function() {
+				new Request.JSON({
+					url: '<?=APPLICATION_LINK?>ajax/user.php',
+					onSuccess: function(data) {
+						if (data['status'] == 1) {
+							alert(data['data'].toSource());	// odd?
+							$('settings_username').innerHTML = data['data']['username'];
+						}
+					}
+				}).send('action=getSettings');
 			}
 		});
 	});

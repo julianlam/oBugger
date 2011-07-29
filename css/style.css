@@ -197,3 +197,8 @@ div.bug_form label.overTxtLabel {
 	position: relative;
 	top: -1px;
 }
+
+span.immutable {
+	font-size: 12px;
+	white-space: pre;
+}

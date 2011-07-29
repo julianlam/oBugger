@@ -3,7 +3,7 @@
 
 	class Auth {
 		public function isLoggedIn() {
-			if (isset($GLOBALS['obugger']['accountID']) && $GLOBALS['obugger']['accountID'] > 0) return 1;
+			if (isset($GLOBALS['obugger']['accountID']) && $GLOBALS['obugger']['accountID'] > 0) return $GLOBALS['obugger']['accountID'];
 			else return 0;
 		}
 
