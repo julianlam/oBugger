@@ -129,9 +129,9 @@
 	';
 
 	$password_change_html = '
-		Current Password: <input class="borderless" type="text" id="current_password" /><br /><br />
-		New Password: <input class="borderless" type="text" id="new_password" /><br /><br />
-		... and again: <input class="borderless" type="text" id="repeat_password" />
+		Current Password: <input class="borderless" type="password" id="current_password" /><br /><br />
+		New Password: <input class="borderless" type="password" id="new_password" /><br /><br />
+		... and again: <input class="borderless" type="password" id="repeat_password" />
 	';
 ?>
 
