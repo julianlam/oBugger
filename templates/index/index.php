@@ -351,16 +351,22 @@
 			},
 			onClose: function() {
 				view_bug.content.innerHTML = '<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">';
-			},
+			}
+<?php
+	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
+		echo ',
 			buttons: [{
-				title: 'Modify this bug',
-				style: 'link',
-				click: 'submit'
+				title: \'Modify this bug\',
+				style: \'link\',
+				click: \'submit\'
 			}],
 			onSubmit: function() {
 				editBug(selectedBugID);
 				view_bug.close();
 			}
+		';
+	}
+?>
 		});
 
 		settings_modal = new MUX.Dialog({
