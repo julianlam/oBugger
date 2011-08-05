@@ -18,23 +18,23 @@
 		break;
 		case 'newbug':
 			$db = db();
-			$bug_info = json_decode(stripslashes($_POST['payload']),true);
+			$bug_info = json_decode($_POST['payload'],true);
 			$add = $db->run(
 				"INSERT INTO bugs VALUES (DEFAULT, :name, :description, 'open', :priority, " . time() . ", " . time() . ")",
-				array(":name" => $bug_info['name'], ":description" => $bug_info['description'], ":priority" => $bug_info['priority'])
+				array(":name" => rawurldecode($bug_info['name']), ":description" => rawurldecode($bug_info['description']), ":priority" => $bug_info['priority'])
 			);
 			$bugID = $db->last();
 			$status = $db->errorInfo();
 
-			if ($status[0] == '00000') echo json_encode(array("status" => 1, "comment" => "Bug successfully added", "bugID" => $bugID, "name" => $bug_info['name'], "description" => $bug_info['description'], "priority" => ucwords(str_replace("_"," ",$bug_info['priority'])), "date" => date('r')));
+			if ($status[0] == '00000') echo json_encode(array("status" => 1, "comment" => "Bug successfully added", "bugID" => $bugID, "name" => stripslashes($bug_info['name']), "description" => stripslashes($bug_info['description']), "priority" => ucwords(str_replace("_"," ",$bug_info['priority'])), "date" => date('r')));
 			else echo json_encode(array("status" => 0, "comment" => "Bug could not be added to database"));
 		break;
 		case 'modifybug':
 			$db = db();
-			$bug_info = json_decode(stripslashes($_POST['payload']),true);
+			$bug_info = json_decode($_POST['payload'],true);
 			$modify = $db->run(
 				"UPDATE bugs SET name=:name, description=:description, state=:state, priority=:priority, lastUpdated=:lastUpdated WHERE bugID=:bugID",
-				array("bugID" => $bug_info['bugID'], ":name" => $bug_info['name'], ":description" => $bug_info['description'], ":state" => $bug_info['state'], ":priority" => $bug_info['priority'], "lastUpdated" => time())
+				array("bugID" => $bug_info['bugID'], ":name" => rawurldecode($bug_info['name']), ":description" => rawurldecode($bug_info['description']), ":state" => $bug_info['state'], ":priority" => $bug_info['priority'], "lastUpdated" => time())
 			);
 			$status = $db->errorInfo();
 

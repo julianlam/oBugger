@@ -40,7 +40,7 @@
 				<tr id="bug_' . $bug['bugID'] . '" class="' . $bug['priorityCSS'] . '">
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(str_replace("\n", " / ", trim(stripslashes($bug['description']))),0,63) . '...' : str_replace("\n", " / ", trim(stripslashes($bug['description'])))) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(str_replace(array("\n", "%0A"), " / ", trim(stripslashes($bug['description']))),0,63) . '...' : str_replace(array("\n", "%0A"), " / ", trim(stripslashes($bug['description'])))) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
@@ -170,8 +170,8 @@
 				$('description').disabled = 1;
 				$('priority').disabled = 1;
 				var payload = {};
-				payload.name = $('name').value;
-				payload.description = $('description').value;
+				payload.name = encodeURIComponent(htmlEntities($('name').value));
+				payload.description = encodeURIComponent(htmlEntities($('description').value));
 				payload.priority = $('priority').value;
 				payload = JSON.encode(payload);
 				new Request.JSON({
@@ -184,7 +184,7 @@
 							new Element('tr', {
 								html:   '<td onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 32 ? data['name'].substr(0, 29) + '...' : data['name']) + '</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">' + (data['description'].length > 65 ? data['description'].substr(0, 62) + '...' : data['description']) +'</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">' + (data['description'].length > 65 ? data['description'].substr(0, 62).replace(/\n/g, ' / ').replace(/%0A/g, ' / ') + '...' : data['description'].replace(/\n/g, ' / ')).replace(/%0A/g, ' / ') +'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">Open</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
@@ -258,8 +258,8 @@
 				$('description').disabled = 1;
 				$('priority').disabled = 1;
 				var payload = {};
-				payload.name = $('name').value;
-				payload.description = $('description').value;
+				payload.name = encodeURIComponent(htmlEntities($('name').value));
+				payload.description = encodeURIComponent(htmlEntities($('description').value));
 				payload.priority = $('priority').value;
 				payload.bugID = selectedBugID;
 				payload.state = $('state').value;
@@ -276,7 +276,7 @@
 							// Update the bug list with the new values
 							var cells = $('bug_'+selectedBugID).getElements('td');
 							cells[1].innerHTML = ($('name').value.length > 32 ? $('name').value.substr(0,29) + '...' : $('name').value);
-							cells[2].innerHTML = ($('description').value.length > 65 ? $('description').value.substr(0,62) + '...' : $('description').value);
+							cells[2].innerHTML = ($('description').value.length > 65 ? $('description').value.substr(0,62).replace(/\n/g, ' / ').replace(/%0A/g, ' / ') + '...' : $('description').value).replace(/\n/g, ' / ').replace(/%0A/g, ' / ');
 
 							edit_form.close();
 						}
@@ -288,8 +288,8 @@
 					url: '<?=APPLICATION_LINK?>ajax/bugs.php',
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
-							$('name').value = data['data']['name'];
-							$('description').value = data['data']['description'];
+							$('name').value = htmlEntityDecode(data['data']['name']);
+							$('description').value = htmlEntityDecode(data['data']['description']);
 							for(i=0;i < $('priority').length;i++) {
 								if ($('priority').options[i].value == data['data']['priority']) $('priority').selectedIndex = i;
 							};
@@ -338,7 +338,7 @@
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
 							view_bug.content.innerHTML = <?=json_encode($view_bug_html)?>;
-							$('view_bug_desc').innerHTML = data['data']['description'].replace(/\n/g, '<br>');
+							$('view_bug_desc').innerHTML = data['data']['description'].replace(/\n/g, '<br>').replace(/%0A/g, '<br>');
 							$('view_bug_priority').innerHTML = data['data']['priority_nice'];
 							$('view_bug_state').innerHTML = data['data']['state_nice'];
 							var fileDate = new Date(data['data']['fileDate'] * 1000);
@@ -433,5 +433,13 @@
 	function editBug(bugID) {
 		selectedBugID = bugID;
 		edit_form.open();
+	}
+	
+	function htmlEntities(str) {
+		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\n/g, '%0A');
+	}
+
+	function htmlEntityDecode(str) {
+		return String(str).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/%0A/g, '\n');
 	}
 </script>
