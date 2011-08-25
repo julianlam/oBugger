@@ -293,7 +293,7 @@
 							};
 						}
 					}
-				}).send('action=getbug&bugID='+selectedBugID);
+				}).send('action=getbug&bugID='+selectedBugID+'&markdown=0');
 				var editFormName = new OverText('name', {
 					positionOptions: {
 						offset: {

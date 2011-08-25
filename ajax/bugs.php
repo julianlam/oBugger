@@ -7,7 +7,9 @@
 		case 'getbug':
 			$db = db();
 			$bugID = $_POST['bugID'];
-			$bug_info = $bugs->get_bugs($bugID);
+			if ($_POST['markdown'] == '0') $markdown = 0;
+			else $markdown = 1;
+			$bug_info = $bugs->get_bugs($bugID, $markdown);
 			$bug_info = reset($bug_info);
 			$bug_info['priority_nice'] = ucwords(str_replace('_', ' ', $bug_info['priority']));
 			$bug_info['state_nice'] = ucwords(str_replace('_', ' ', $bug_info['state']));

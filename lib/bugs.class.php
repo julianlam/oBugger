@@ -1,8 +1,9 @@
 <?php
 	require_once 'common_run.inc.php';
+	require_once ROOT_FOLDER . 'lib/markdown/markdown.php';
 
 	class Bugs {
-		public function get_bugs($bugIDs=null) {
+		public function get_bugs($bugIDs=null, $markdown=1) {
 			$db = db();
 			if ($bugIDs != null) {
 				if (!is_array($bugIDs)) $bugIDs = array($bugIDs);
@@ -12,12 +13,28 @@
 					if ($bugID > 0) $bugID_sql .= (strlen($bugID_sql) > 0 ? ' OR ' : '') . "bugID='$bugID'";
 				}
 				$bugs = $db->run("SELECT * FROM bugs WHERE $bugID_sql")->fetchall(PDO::FETCH_ASSOC);
+				if ($markdown == 1) {
+					$bug_count = count($bugs);
+					for($i=0;$i<$bug_count;$i++) {
+						$bugs[$i]['description'] = Markdown($bugs[$i]['description']);
+					}
+				}
 				return $bugs;
 			}
 			else {
 				// Gets a listing of all bugs, sorted into two arrays, open and closed
 				$open_bugs = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
 				$closed_bugs = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+				if ($markdown == 1) {
+					$open_bug_count = count($open_bugs);
+					for($i=0;$i<$open_bug_count;$i++) {
+						$open_bugs[$i]['description'] = Markdown($open_bugs[$i]['description']);
+					}
+					$closed_bug_count = count($closed_bugs);
+					for($i=0;$i<$closed_bug_count;$i++) {
+						$closed_bugs[$i]['description'] = Markdown($closed_bugs[$i]['description']);
+					}
+				}
 
 				return array("open" => $open_bugs, "closed" => $closed_bugs);
 			}
