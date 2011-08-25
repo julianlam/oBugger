@@ -1,6 +1,7 @@
 <?php
 	//error_reporting(E_ALL);
 	include 'lib/common_run.inc.php';
+	include 'lib/bugs.class.php';
 
 	if (!isset($_GET['action'])) $_GET['action'] = '';
 	switch($_GET['action']) {
@@ -51,6 +52,7 @@
 			$db = db();
 			include 'lib/auth.class.php';
 			$auth = new Auth();
+			$bugs = new Bugs();
 
 			if ($_GET['action'] == 'logout') {
 				$auth->logout();
@@ -70,8 +72,9 @@
 			if (in_array('r', $config['security']['anon_access']) || ($params['loggedIn'] == 1 && in_array('r', $config['security']['auth_access']))) {
 				$params['priorities'] = $config['priorities'];
 				$params['states'] = $config['states'];
-				$params['bugs'] = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
-				$params['closed_bugs'] = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+				$bugs_list = $bugs->get_bugs();
+				$params['bugs'] = $bugs_list['open'];
+				$params['closed_bugs'] = $bugs_list['closed'];
 			}
 
 			if (isset($_GET['slim'])) render('index/index.php', $params, 0);

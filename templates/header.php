@@ -4,10 +4,11 @@
 	<head>
 		<title>oBugger!</title>
 		<link rel="stylesheet" href="css/cssloader.php" type="text/css" />
-		<link rel="stylesheet" href="<?=JAVASCRIPT_PATH?>MUX.Dialog/MUX.Dialog.css" type="text/css" />
-		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>mootools-core-1.3.2.js"></script>
-		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>mootools-more-1.3.2.1.js"></script>
-		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>MUX.Dialog/MUX.Dialog.js"></script>
+		<link rel="stylesheet" href="<?=LIBRARY_PATH?>MUX.Dialog/MUX.Dialog.css" type="text/css" />
+		<script type="text/javascript" src="<?=JAVASCRIPT_PATH?>jsloader.php"></script>
+		<script type="text/javascript" src="<?=LIBRARY_PATH?>mootools-core-1.3.2.js"></script>
+		<script type="text/javascript" src="<?=LIBRARY_PATH?>mootools-more-1.3.2.1.js"></script>
+		<script type="text/javascript" src="<?=LIBRARY_PATH?>MUX.Dialog/MUX.Dialog.js"></script>
 	</head>
 	<body>
 		<div class="header">

@@ -21,14 +21,13 @@
 		<table id="buglist">
 			<thead>
 				<tr style="text-align: left;">
-					<th>bugID</th>
+					<th style="width: 50px; text-align: center;">bugID</th>
 					<th>Name</th>
-					<th>Description</th>
-					<th>State</th>
-					<th>Priority</th>
+					<th style="text-align: center;">State</th>
+					<th style="text-align: center;">Priority</th>
 					<th>Filed Date</th>
 	';
-	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '	<th>Actions</th>';
+	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '	<th style="width: 60px; text-align: center;">Actions</th>';
 	echo '
 				</tr>
 			</thead>
@@ -37,13 +36,12 @@
 	foreach ($params['bugs'] as $bug) {
 		$bug['priorityCSS'] = strtolower(str_replace(" ", "_", $bug['priority']));
 		echo '
-				<tr id="bug_' . $bug['bugID'] . '" class="' . $bug['priorityCSS'] . '">
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(str_replace(array("\n", "%0A"), " / ", trim(stripslashes($bug['description']))),0,63) . '...' : str_replace(array("\n", "%0A"), " / ", trim(stripslashes($bug['description'])))) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
+				<tr id="bug_' . $bug['bugID'] . '">
+					<td class="bugID" onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 64 ? substr(stripslashes($bug['name']), 0, 61) . '...' : stripslashes($bug['name'])) . '</td>
+					<td class="state" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
+					<td class="priority ' . $bug['priorityCSS'] . '" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("H:i:s, j/n/Y", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
@@ -64,10 +62,9 @@
 		<table id="closed_bugs">
 			<thead>
 				<tr style="text-align: left;">
-					<th>bugID</th>
+					<th style="width: 50px; text-align: center;">bugID</th>
 					<th>Name</th>
-					<th>Description</th>
-					<th>Priority</th>
+					<th style="text-align: center;">Priority</th>
 					<th>Filed Date</th>
 	';
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th>Actions</th>';
@@ -78,12 +75,11 @@
 	';
 	foreach ($params['closed_bugs'] as $bug) {
 		echo '
-				<tr id="bug_' . $bug['bugID'] . '" style="background: #e0e0e0;">
+				<tr id="bug_' . $bug['bugID'] . '">
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 32 ? substr(stripslashes($bug['name']), 0, 29) . '...' : stripslashes($bug['name'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['description']) > 65 ? substr(nl2br(stripslashes($bug['description'])),0,62) . '...' : nl2br(stripslashes($bug['description']))) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("r", $bug['fileDate']) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 64 ? substr(stripslashes($bug['name']), 0, 61) . '...' : stripslashes($bug['name'])) . '</td>
+					<td class="priority" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("H:i:s, j/n/Y", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '
@@ -183,8 +179,7 @@
 							$('priority').disabled = 0;
 							new Element('tr', {
 								html:   '<td onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 32 ? data['name'].substr(0, 29) + '...' : data['name']) + '</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">' + (data['description'].length > 65 ? data['description'].substr(0, 62).replace(/\n/g, ' / ').replace(/%0A/g, ' / ') + '...' : data['description'].replace(/\n/g, ' / ')).replace(/%0A/g, ' / ') +'</td>'+
+									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 64 ? data['name'].substr(0, 61) + '...' : data['name']) + '</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">Open</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
@@ -275,8 +270,8 @@
 
 							// Update the bug list with the new values
 							var cells = $('bug_'+selectedBugID).getElements('td');
-							cells[1].innerHTML = ($('name').value.length > 32 ? $('name').value.substr(0,29) + '...' : $('name').value);
-							cells[2].innerHTML = ($('description').value.length > 65 ? $('description').value.substr(0,62).replace(/\n/g, ' / ').replace(/%0A/g, ' / ') + '...' : $('description').value).replace(/\n/g, ' / ').replace(/%0A/g, ' / ');
+							cells[1].innerHTML = ($('name').value.length > 64 ? $('name').value.substr(0,61) + '...' : $('name').value);
+							if ($('bug_'+selectedBugID).get('class') != $('priority').value) $('bug_'+selectedBugID).set('class', $('priority').value);
 
 							edit_form.close();
 						}
@@ -352,7 +347,7 @@
 			onClose: function() {
 				view_bug.content.innerHTML = '<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">';
 			}
-<?php
+	<?php
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 		echo ',
 			buttons: [{
@@ -366,7 +361,7 @@
 			}
 		';
 	}
-?>
+	?>
 		});
 
 		settings_modal = new MUX.Dialog({
@@ -424,22 +419,4 @@
 			}]
 		});
 	});
-
-	function viewBug(bugID) {
-		selectedBugID = bugID;
-		view_bug.open();
-	}
-
-	function editBug(bugID) {
-		selectedBugID = bugID;
-		edit_form.open();
-	}
-	
-	function htmlEntities(str) {
-		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\n/g, '%0A');
-	}
-
-	function htmlEntityDecode(str) {
-		return String(str).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/%0A/g, '\n');
-	}
 </script>

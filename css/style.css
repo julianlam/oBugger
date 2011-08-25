@@ -31,6 +31,10 @@ table#buglist tr, table#closed_bugs tr {
 	cursor: pointer;
 }
 
+table#buglist tr:hover, table#closed_bugs tr:hover {
+	background: #eee;
+}
+
 table#buglist thead tr, table#closed_bugs thead tr {
 	cursor: default;
 }
@@ -43,6 +47,18 @@ table#buglist td, table#closed_bugs td {
 	border-bottom: 1px solid #333;
 	font-size: 11px;
 	padding: 0.5em;
+}
+
+table#buglist td.bugID, table#closed_bugs td.bugID {
+	text-align: center;
+}
+
+table#buglist td.state, table#closed_bugs td.state {
+	text-align: center;
+}
+
+table#buglist td.priority, table#closed_bugs td.priority {
+	text-align: center;
 }
 
 table#buglist td.actions, table#closed_bugs td.actions {
@@ -60,7 +76,7 @@ table#buglist td.actions img, table#closed_bugs td.actions img {
 	foreach ($config['priorities'] as $priority) {
 		$priority[0] = strtolower(str_replace(" ", "_", $priority[0]));
 		echo '
-table#buglist tr.' . $priority[0] . ', table#closed_bugs tr.' . $priority[0] . ' {
+table#buglist td.' . $priority[0] . ', table#closed_bugs td.' . $priority[0] . ' {
 	background-color: #' . $priority[1] . ';
 }
 		';
