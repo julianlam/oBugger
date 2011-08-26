@@ -186,9 +186,11 @@
 									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 64 ? data['name'].substr(0, 61) + '...' : data['name']) + '</td>'+
 									'<td class="state" onclick="viewBug('+data['bugID']+');">Open</td>'+
 									'<td class="priority '+$('priority').value+'" onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
+									'<td class="assignee" onclick="viewBug('+data['bugID']+');"><span style="color: #ccc">Unassigned</span></td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
 									'<td class="actions"><a onclick="editBug(' + data['bugID'] + ');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
-								'class': data['priority'].replace(" ", "_").toLowerCase()
+								'class': data['priority'].replace(" ", "_").toLowerCase(),
+								id: 'bug_'+data['bugID']
 							}).inject('buglist_body', 'top');
 							$('name').value = '';
 							$('description').value = '';
@@ -242,7 +244,7 @@
 				'</select>'+
 				'<br><label for="assignee">Assigned To</label>'+
 				'<select id="assignee"></select>'+
-				' &nbsp; <input style="width: 150px; position: relative; top: 2px; font-weight: normal;" type="text" id="assignee_search" onkeydown="searchUsersByName($(\'assignee_search\').value, \'assignee\');"></input>'+
+				' &nbsp; <input style="width: 150px; position: relative; top: 2px; font-weight: normal;" type="text" id="assignee_search" onkeyup="searchUsersByName($(\'assignee_search\').value, \'assignee\');"></input>'+
 				'<br>',
 				'class': 'bug_form',
 				id: 'edit_bug_form'
@@ -285,7 +287,7 @@
 							cells[1].innerHTML = ($('name').value.length > 64 ? $('name').value.substr(0,61) + '...' : $('name').value);
 							cells[3].set('class', 'priority ' + $('priority').value);
 							cells[3].innerHTML = $('priority_'+$('priority').value).innerHTML;
-							cells[4].innerHTML = $('assignee_'+$('assignee').value).innerHTML;
+							cells[4].innerHTML = ($('assignee').value > 0 ? $('assignee_'+$('assignee').value).innerHTML : '<span style="color: #ccc;">Unassigned</span>');
 
 							window.location.hash = '';
 							edit_form.close();
