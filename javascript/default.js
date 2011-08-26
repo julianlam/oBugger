@@ -1,4 +1,32 @@
+function $get(key,url){
+	if(arguments.length < 2) url = location.href;
+	if(arguments.length > 0 && key != ""){
+		if(key == "#"){
+			var regex = new RegExp("[#]([^$]*)");
+		} else if(key == "?"){
+			var regex = new RegExp("[?]([^#$]*)");
+		} else {
+			var regex = new RegExp("[?&]"+key+"=([^&#]*)");
+		}
+		var results = regex.exec(url);
+		return (results == null )? "" : results[1];
+	} else {
+		url = url.split("?");
+		var results = {};
+			if(url.length > 1){
+				url = url[1].split("#");
+				if(url.length > 1) results["hash"] = url[1];
+				url[0].split("&").each(function(item,index){
+					item = item.split("=");
+					results[item[0]] = item[1];
+				});
+			}
+		return results;
+	}
+}
+
 function viewBug(bugID) {
+	window.location.hash = '?bugID='+bugID;
 	selectedBugID = bugID;
 	view_bug.open();
 }
@@ -19,10 +47,10 @@ function sortColumnByPriority(table) {
 }
 
 function htmlEntities(str) {
-	return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\n/g, '%0A');
+	return String(str).replace(/"/g, '&quot;').replace(/\n/g, '%0A');
 }
 
 function htmlEntityDecode(str) {
-	return String(str).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/%0A/g, '\n');
+	return String(str).replace(/&quot;/g, '"').replace(/%0A/g, '\n');
 }
 

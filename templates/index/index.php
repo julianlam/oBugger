@@ -71,7 +71,7 @@
 	echo '
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="closed_bugs_body">
 	';
 	foreach ($params['closed_bugs'] as $bug) {
 		echo '
@@ -178,10 +178,10 @@
 							$('description').disabled = 0;
 							$('priority').disabled = 0;
 							new Element('tr', {
-								html:   '<td onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
+								html:   '<td class="bugID" onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 64 ? data['name'].substr(0, 61) + '...' : data['name']) + '</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">Open</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
+									'<td class="state" onclick="viewBug('+data['bugID']+');">Open</td>'+
+									'<td class="priority" onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
 									'<td class="actions"><a onclick="editBug(' + data['bugID'] + ');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
 								'class': data['priority'].replace(" ", "_").toLowerCase()
@@ -273,6 +273,7 @@
 							cells[1].innerHTML = ($('name').value.length > 64 ? $('name').value.substr(0,61) + '...' : $('name').value);
 							if ($('bug_'+selectedBugID).get('class') != $('priority').value) $('bug_'+selectedBugID).set('class', $('priority').value);
 
+							window.location.hash = '';
 							edit_form.close();
 						}
 					}
@@ -345,6 +346,7 @@
 				}).send('action=getbug&bugID='+selectedBugID);
 			},
 			onClose: function() {
+				window.location.hash = '';
 				view_bug.content.innerHTML = '<div style="margin-top: 4.5em; font-weight: bold; text-align: center; font-size: 12px;">Loading &nbsp; <img style="position: relative; top: 4px;" src="<?=IMG_PATH?>loader.gif">';
 			}
 	<?php
@@ -418,5 +420,8 @@
 				click: 'submit'
 			}]
 		});
+
+		// Load a bug up if there is already one selected in the URL
+		if ($get('bugID')) viewBug($get('bugID'));
 	});
 </script>

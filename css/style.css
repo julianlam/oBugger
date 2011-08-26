@@ -31,9 +31,10 @@ table#buglist tr, table#closed_bugs tr {
 	cursor: pointer;
 }
 
-table#buglist tr:hover, table#closed_bugs tr:hover {
+tbody#buglist_body tr:hover, tbody#closed_bugs_body tr:hover {
 	background: #eee;
 }
+
 
 table#buglist thead tr, table#closed_bugs thead tr {
 	cursor: default;
