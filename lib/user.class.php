@@ -30,5 +30,12 @@
 				else return 0;
 			}
 		}
+
+		public function searchUsersByName($query) {
+			$db = db();
+			$users = $db->run("SELECT accountID, username FROM users WHERE lower(username) LIKE :query ORDER BY username LIMIT 10", array("query" => strtolower('%' . $query . '%')))->fetchall(PDO::FETCH_ASSOC);
+
+			return $users;
+		}
 	}
 ?>

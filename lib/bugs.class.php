@@ -12,7 +12,7 @@
 					$bugID = intval($bugID);
 					if ($bugID > 0) $bugID_sql .= (strlen($bugID_sql) > 0 ? ' OR ' : '') . "bugID='$bugID'";
 				}
-				$bugs = $db->run("SELECT * FROM bugs WHERE $bugID_sql")->fetchall(PDO::FETCH_ASSOC);
+				$bugs = $db->run("SELECT bugs.*, users.username FROM bugs LEFT JOIN users ON bugs.assignedTo=users.accountID WHERE $bugID_sql")->fetchall(PDO::FETCH_ASSOC);
 				if ($markdown == 1) {
 					$bug_count = count($bugs);
 					for($i=0;$i<$bug_count;$i++) {
@@ -23,8 +23,8 @@
 			}
 			else {
 				// Gets a listing of all bugs, sorted into two arrays, open and closed
-				$open_bugs = $db->run("SELECT * FROM bugs WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
-				$closed_bugs = $db->run("SELECT * FROM bugs WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+				$open_bugs = $db->run("SELECT bugs.*, users.username FROM bugs LEFT JOIN users ON bugs.assignedTo=users.accountID WHERE state != 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
+				$closed_bugs = $db->run("SELECT bugs.*, users.username FROM bugs LEFT JOIN users ON bugs.assignedTo=users.accountID WHERE state = 'closed' ORDER BY fileDate DESC")->fetchall(PDO::FETCH_ASSOC);
 				if ($markdown == 1) {
 					$open_bug_count = count($open_bugs);
 					for($i=0;$i<$open_bug_count;$i++) {
@@ -58,8 +58,8 @@
 			$db = db();
 			$bug_info = json_decode($payload,true);
 			$modify = $db->run(
-				"UPDATE bugs SET name=:name, description=:description, state=:state, priority=:priority, lastUpdated=:lastUpdated WHERE bugID=:bugID",
-				array("bugID" => $bug_info['bugID'], ":name" => rawurldecode($bug_info['name']), ":description" => rawurldecode($bug_info['description']), ":state" => $bug_info['state'], ":priority" => $bug_info['priority'], "lastUpdated" => time())
+				"UPDATE bugs SET name=:name, description=:description, state=:state, priority=:priority, assignedTo=:assignedTo, lastUpdated=:lastUpdated WHERE bugID=:bugID",
+				array("bugID" => $bug_info['bugID'], ":name" => rawurldecode($bug_info['name']), ":description" => rawurldecode($bug_info['description']), ":state" => $bug_info['state'], ":priority" => $bug_info['priority'], "assignedTo" => $bug_info['assignee'], "lastUpdated" => time())
 			);
 			$status = $db->errorInfo();
 

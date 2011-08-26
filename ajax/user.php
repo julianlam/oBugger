@@ -15,6 +15,10 @@
 
 			echo json_encode(array("status" => $settings));
 		break;
+		case 'searchUsersByName':
+			$user = new User();
+			echo json_encode($user->searchUsersByName($_POST['query']));
+		break;
 		default:
 			echo json_encode(array("status" => 0, "comment" => "No action received"));
 		break;

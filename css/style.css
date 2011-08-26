@@ -62,6 +62,10 @@ table#buglist td.priority, table#closed_bugs td.priority {
 	text-align: center;
 }
 
+table#buglist td.assignee, table#closed_bugs td.assignee {
+	text-align: center;
+}
+
 table#buglist td.actions, table#closed_bugs td.actions {
 	text-align: center;
 }

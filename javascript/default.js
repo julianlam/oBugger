@@ -1,3 +1,5 @@
+var delayTimer = 0;
+
 function $get(key,url){
 	if(arguments.length < 2) url = location.href;
 	if(arguments.length > 0 && key != ""){
@@ -44,6 +46,26 @@ function sortColumnByPriority(table) {
 		alert(cells[0].innerHTML);
 		alert(cells[4].innerHTML);
 	});
+}
+
+function searchUsersByName(query, element) {
+	if($defined(this.timer)) $clear(this.timer);
+	this.timer = (function() {
+		new Request.JSON({
+			url: '<?=APPLICATION_LINK?>ajax/user.php',
+			onSuccess: function(data) {
+				$(element).innerHTML = '';
+				data.each(function(user) {
+					new Element('option', {
+						value: user.accountID,
+						id: element+'_'+user.accountID,
+						html: user.username
+					}).inject('assignee', 'bottom');
+				});
+			}
+		
+		}).send('action=searchUsersByName&query='+query);	
+	}).delay(200);
 }
 
 function htmlEntities(str) {

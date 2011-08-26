@@ -25,7 +25,8 @@
 					<th>Name</th>
 					<th style="text-align: center;">State</th>
 					<th style="text-align: center;">Priority</th>
-					<th>Filed Date</th>
+					<th style="text-align: center;">Assigned To</th>
+					<th style="width: 130px; text-align: center;">Filed Date</th>
 	';
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '	<th style="width: 60px; text-align: center;">Actions</th>';
 	echo '
@@ -41,6 +42,7 @@
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 64 ? substr(stripslashes($bug['name']), 0, 61) . '...' : stripslashes($bug['name'])) . '</td>
 					<td class="state" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
 					<td class="priority ' . $bug['priorityCSS'] . '" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+					<td class="assignee" onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['username']) > 0 ? $bug['username'] : '<span style="color: #ccc;">Unassigned</span>') . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("H:i:s, j/n/Y", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
@@ -65,9 +67,10 @@
 					<th style="width: 50px; text-align: center;">bugID</th>
 					<th>Name</th>
 					<th style="text-align: center;">Priority</th>
-					<th>Filed Date</th>
+					<th style="text-align: center;">Assigned To</th>
+					<th style="width: 130px; text-align: center;">Filed Date</th>
 	';
-	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th>Actions</th>';
+	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th style="width: 60px; text-align: center;">Actions</th>';
 	echo '
 				</tr>
 			</thead>
@@ -79,6 +82,7 @@
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['name']) > 64 ? substr(stripslashes($bug['name']), 0, 61) . '...' : stripslashes($bug['name'])) . '</td>
 					<td class="priority" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
+					<td class="assignee" onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['username']) > 0 ? $bug['username'] : '<span style="color: #ccc;">Unassigned</span>') . '</td>
 					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("H:i:s, j/n/Y", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
@@ -181,7 +185,7 @@
 								html:   '<td class="bugID" onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">' + (data['name'].length > 64 ? data['name'].substr(0, 61) + '...' : data['name']) + '</td>'+
 									'<td class="state" onclick="viewBug('+data['bugID']+');">Open</td>'+
-									'<td class="priority" onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
+									'<td class="priority '+$('priority').value+'" onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
 									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
 									'<td class="actions"><a onclick="editBug(' + data['bugID'] + ');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
 								'class': data['priority'].replace(" ", "_").toLowerCase()
@@ -228,14 +232,17 @@
 			content: new Element('div', {
 				html: '<input type="text" id="name" title="Name"><br>' +
 				'<textarea id="description" title="Description"></textarea><br>' +
-				'<label id="priority_label" for="priority">Priority</label>'+
+				'<label for="priority">Priority</label>'+
 				'<select id="priority">'+
-				'<?php foreach($params['priorities'] as $priority) {echo '<option style="background: #' . $priority[1] . ';" value="' . strtolower(str_replace(" ", "_", $priority[0])) . '"' . ($priority[0] == "Medium" ? ' selected' : '') . '>' . $priority[0] . '</option>';}?>' +
+				'<?php foreach($params['priorities'] as $priority) {echo '<option style="background: #' . $priority[1] . ';" value="' . strtolower(str_replace(" ", "_", $priority[0])) . '"' . ($priority[0] == "Medium" ? ' selected' : '') . ' id="priority_' . strtolower(str_replace(" ", "_", $priority[0])) . '">' . $priority[0] . '</option>';}?>' +
 				'</select>'+
-				' &nbsp; | &nbsp; <label id="state_label" for="state">State</label>'+
+				' &nbsp; | &nbsp; <label for="state">State</label>'+
 				'<select id="state">'+
 				'<?php foreach($params['states'] as $state) {echo '<option value="' . strtolower(str_replace(" ", "_", $state)) . '">' . $state . '</option>';}?>' +
 				'</select>'+
+				'<br><label for="assignee">Assigned To</label>'+
+				'<select id="assignee"></select>'+
+				' &nbsp; <input style="width: 150px; position: relative; top: 2px; font-weight: normal;" type="text" id="assignee_search" onkeydown="searchUsersByName($(\'assignee_search\').value, \'assignee\');"></input>'+
 				'<br>',
 				'class': 'bug_form',
 				id: 'edit_bug_form'
@@ -252,12 +259,15 @@
 				$('name').disabled = 1;
 				$('description').disabled = 1;
 				$('priority').disabled = 1;
+				$('state').disabled = 1;
+				$('assignee').disabled = 1;
 				var payload = {};
 				payload.name = encodeURIComponent(htmlEntities($('name').value));
 				payload.description = encodeURIComponent(htmlEntities($('description').value));
 				payload.priority = $('priority').value;
 				payload.bugID = selectedBugID;
 				payload.state = $('state').value;
+				payload.assignee = ($('assignee').value > 0 ? $('assignee').value : 0);
 				payload = JSON.encode(payload);
 				new Request.JSON({
 					url: '<?=APPLICATION_LINK?>ajax/bugs.php',
@@ -267,11 +277,15 @@
 							$('name').disabled = 0;
 							$('description').disabled = 0;
 							$('priority').disabled = 0;
+							$('state').disabled = 0;
+							$('assignee').disabled = 0;
 
 							// Update the bug list with the new values
 							var cells = $('bug_'+selectedBugID).getElements('td');
 							cells[1].innerHTML = ($('name').value.length > 64 ? $('name').value.substr(0,61) + '...' : $('name').value);
-							if ($('bug_'+selectedBugID).get('class') != $('priority').value) $('bug_'+selectedBugID).set('class', $('priority').value);
+							cells[3].set('class', 'priority ' + $('priority').value);
+							cells[3].innerHTML = $('priority_'+$('priority').value).innerHTML;
+							cells[4].innerHTML = $('assignee_'+$('assignee').value).innerHTML;
 
 							window.location.hash = '';
 							edit_form.close();
@@ -292,6 +306,12 @@
 							for(i=0;i < $('state').length;i++) {
 								if ($('state').options[i].value == data['data']['state']) $('state').selectedIndex = i;
 							};
+							new Element('option', {
+								value: data['data']['assignedTo'],
+								id: 'assignee_'+data['data']['assignedTo'],
+								html: data['data']['username'],
+								selected: 1
+							}).inject('assignee');
 						}
 					}
 				}).send('action=getbug&bugID='+selectedBugID+'&markdown=0');
