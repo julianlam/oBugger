@@ -10,7 +10,8 @@ Requirements:
 
 Installation:
 	1.  Configure lib/config.inc.php to contain required values (public access links, local paths,
-	    database servers and logins, etc)
+	    database servers and logins, etc). A sample file is provided in config.sample.inc.php.
+	    Simply copy this file to config.inc.php and edit its values.
 
 	2.  Connect to mysql server and create a new database table (with name matching the one defined
 	    in lib/config.inc.php)
@@ -28,5 +29,5 @@ Installation:
 	6.  Profit!
 
 Support:
-	1.  SourceForge Discussion Page: https://sourceforge.net/p/obugger/discussion/
+	1.  Google Code Issue Tracker: http://code.google.com/p/obugger/issues/list
 	2.  Questions? Contact Julian Lam (julian.lam@gmail.com)
