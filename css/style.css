@@ -48,6 +48,8 @@ table#buglist td, table#closed_bugs td {
 	border-bottom: 1px solid #333;
 	font-size: 11px;
 	padding: 0.5em;
+	overflow: hidden;
+	max-width: 600px;
 }
 
 table#buglist td.bugID, table#closed_bugs td.bugID {
