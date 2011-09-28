@@ -61,7 +61,7 @@
 				$user = $auth->login($_POST['username'], $_POST['password']);
 				if ($user) {
 					$params['status'] = 1;
-					$params['loggedIn'] = 1;
+					$params['loggedIn'] = $auth->isLoggedIn();;
 				}
 				else $params['status'] = 0;
 			}
