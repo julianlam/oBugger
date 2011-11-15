@@ -43,7 +43,7 @@
 					<td class="state" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
 					<td class="priority ' . $bug['priorityCSS'] . '" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
 					<td class="assignee" onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['assignee']) > 0 ? $bug['assignee'] : '<span style="color: #ccc;">Unassigned</span>') . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("m/d/Y, H:i:s", $bug['fileDate']) . '</td>
+					<td class="filedDate" onclick="viewBug(' . $bug['bugID'] . ');">' . date("m/d/Y, H:i:s", $bug['fileDate']) . '</td>
 		';
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 			echo '

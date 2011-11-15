@@ -49,23 +49,29 @@ table#buglist td, table#closed_bugs td {
 	font-size: 11px;
 	padding: 0.5em;
 	overflow: hidden;
-	max-width: 600px;
+	max-width: 800px;
+	width: 800px;
+	text-overflow: ellipsis;
 }
 
 table#buglist td.bugID, table#closed_bugs td.bugID {
 	text-align: center;
+	width: 60px;
 }
 
 table#buglist td.state, table#closed_bugs td.state {
 	text-align: center;
+	width: 60px;
 }
 
 table#buglist td.priority, table#closed_bugs td.priority {
 	text-align: center;
+	width: 85px;
 }
 
 table#buglist td.assignee, table#closed_bugs td.assignee {
 	text-align: center;
+	width: 100px;
 }
 
 table#buglist td.actions, table#closed_bugs td.actions {
@@ -74,6 +80,10 @@ table#buglist td.actions, table#closed_bugs td.actions {
 
 table#buglist td.actions img, table#closed_bugs td.actions img {
 	width: 16px;
+}
+
+table#buglist td.filedDate, table#closed_bugs td.filedDate {
+	width: 125px;
 }
 
 <?php
