@@ -49,14 +49,17 @@ table#buglist td, table#closed_bugs td {
 	font-size: 11px;
 	padding: 0.5em;
 	overflow: hidden;
-	max-width: 800px;
-	width: 800px;
-	text-overflow: ellipsis;
+	text-overflow: ellipsis
+	max-width: 600px;
 }
 
 table#buglist td.bugID, table#closed_bugs td.bugID {
 	text-align: center;
 	width: 60px;
+}
+
+table#buglist td.name, table#closed_bugs td.name {
+	max-width: 600px;
 }
 
 table#buglist td.state, table#closed_bugs td.state {
