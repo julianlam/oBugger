@@ -326,7 +326,7 @@
 		obugger.sortBugs('closed', 'bugID');
 
 		// Initiate sorting events
-		$$($('buglist').getElements('th[data-sort]'), $('closed_bugs').getElements('th[data-sort]')).addEvent('click', function() {
+		$$($('buglist'), $('closed_bugs')).addEvent('click:relay(th[data-sort])', function() {
 			var column = this.get('data-sort');
 			var table = this.getParent('table').get('id');
 			if (table == 'buglist') var list = 'open';
@@ -337,7 +337,8 @@
 		});
 
 		// Make bugs clickable
-		$$($('buglist').getElements('tr[data-bug-id]'), $('closed_bugs').getElements('tr[data-bug-id]')).addEvent('click', function() {
+		console.log($$($('buglist_body'), $('closed_bugs_body')));
+		$$($('buglist_body'), $('closed_bugs_body')).addEvent('click:relay(tr[data-bug-id])', function() {
 			viewBug(this.getProperty('data-bug-id'));
 		});
 
