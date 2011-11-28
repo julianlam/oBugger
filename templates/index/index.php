@@ -414,7 +414,7 @@
 							add_form.close();
 						}
 					}
-				}).send({action: 'newbug', payload: payload});
+				}).post({action: 'newbug', payload: payload});
 			},
 			onOpen: function() {
 				var addFormName = new OverText('name', {
