@@ -337,7 +337,6 @@
 		});
 
 		// Make bugs clickable
-		console.log($$($('buglist_body'), $('closed_bugs_body')));
 		$$($('buglist_body'), $('closed_bugs_body')).addEvent('click:relay(a[data-action="edit"])', function(event) {
 			editBug(this.getParent('tr').getProperty('data-bug-id'));
 		});
