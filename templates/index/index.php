@@ -175,8 +175,8 @@
 			this.clearBugs();
 			if (!list || list == 'open') Array.each(Object.keys(obugger.bugList.open), function(bugID) { obugger.renderBug(bugID); });
 			if (!list || list == 'closed') Array.each(Object.keys(obugger.bugList.closed), function(bugID) { obugger.renderBug(bugID); });
-			obugger.sortBugs('open', 'bugID', 'asc');
-			obugger.sortBugs('closed', 'bugID', 'asc');
+			obugger.sortBugs('open', 'bugID', 'desc');
+			obugger.sortBugs('closed', 'bugID', 'desc');
 		},
 		sortBugs: function(list, column, dir) {
 			if (list == 'open') listTable = $('buglist');
