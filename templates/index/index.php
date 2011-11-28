@@ -138,7 +138,7 @@
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
 							'<td class="actions">'+
-								'<a onclick="editBug('+bugID+');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
+								'<a data-action="edit"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
 							'</td>'
 						:'')
 				}).inject(container, location);
@@ -161,7 +161,7 @@
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
 							'<td class="actions">'+
-								'<a onclick="editBug('+bugID+');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
+								'<a data-action="edit"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
 							'</td>'
 						:'')
 				}).inject(container, 'bottom');
@@ -338,8 +338,11 @@
 
 		// Make bugs clickable
 		console.log($$($('buglist_body'), $('closed_bugs_body')));
-		$$($('buglist_body'), $('closed_bugs_body')).addEvent('click:relay(tr[data-bug-id])', function() {
-			viewBug(this.getProperty('data-bug-id'));
+		$$($('buglist_body'), $('closed_bugs_body')).addEvent('click:relay(a[data-action="edit"])', function(event) {
+			editBug(this.getParent('tr').getProperty('data-bug-id'));
+		});
+		$$($('buglist_body'), $('closed_bugs_body')).addEvent('click:relay(tr[data-bug-id])', function(event) {
+			if (!event.target.match('img')) viewBug(this.getProperty('data-bug-id'));
 		});
 
 		accountID = <?=$params['loggedIn']?>;
