@@ -57,7 +57,7 @@
 			$bugID = $db->last();
 			$status = $add->errorInfo();
 
-			if ($status[0] == '00000') return array("status" => 1, "bugID" => $bugID, "name" => stripslashes($bug_info['name']), "description" => stripslashes($bug_info['description']), "priority" => ucwords(str_replace("_"," ",$bug_info['priority'])), "date" => date('r'));
+			if ($status[0] == '00000') return array("status" => 1, "bugID" => $bugID, "name" => stripslashes($bug_info['name']), "description" => stripslashes($bug_info['description']), "priority" => ucwords(str_replace("_"," ",$bug_info['priority'])));
 			else return array("status" => 0, "dump" => $status);
 		}
 

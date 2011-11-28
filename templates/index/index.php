@@ -107,15 +107,17 @@
 	// Bug list rendering functions
 	var obugger = {
 		loggedIn: <?=$params['loggedIn']?>,
+		account: <?=(isset($GLOBALS['obugger']['accountID']) ? '{ username: "' . $GLOBALS['obugger']['username'] . '", accountID: ' . $GLOBALS['obugger']['accountID'] . ' }' : '{}')?>,
 		bugList: {
 			open: <?=(htmlspecialchars(json_encode($params['bugs']), ENT_NOQUOTES) ? htmlspecialchars(json_encode($params['bugs']), ENT_NOQUOTES) : '{}')?>,
 			closed: <?=(htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) ? htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) : '{}')?>
 		},
-		renderBug: function(bugID) {
+		renderBug: function(bugID, location) {
 			// Given a bug ID, renders its row entry into the appropriate list
 			if (obugger.bugList.open[bugID]) { var container = $('buglist_body'); var state = 'open'; }
 			else if (obugger.bugList.closed[bugID]) { var container = $('closed_bugs_body'); var state = 'closed'; }
 			else return;	// Do nothing
+			if (!location) location = 'bottom';
 
 			if (state == 'open') {
 				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
@@ -139,7 +141,7 @@
 								'<a onclick="editBug('+bugID+');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
 							'</td>'
 						:'')
-				}).inject(container, 'bottom');
+				}).inject(container, location);
 			}
 			else {
 				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
@@ -174,19 +176,37 @@
 			if (!list || list == 'open') Array.each(Object.keys(obugger.bugList.open), function(bugID) { obugger.renderBug(bugID); });
 			if (!list || list == 'closed') Array.each(Object.keys(obugger.bugList.closed), function(bugID) { obugger.renderBug(bugID); });
 		},
-		sortBugs: function(list, column) {
+		sortBugs: function(list, column, dir) {
 			if (list == 'open') listTable = $('buglist');
 			else listTable = $('closed_bugs');
 
 			var glyph = listTable.getElement('th[data-sort="'+column+'"] span');
-			if (glyph.innerHTML == '' || glyph.innerHTML == '\u25bc') {
+			if (dir == 'asc') {
 				// Clear existing glyphs (if present)
 				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
 					el.empty();
 				});
 
 				glyph.innerHTML = '\u25b2';
-				var dir = 'asc';
+				dir = 'asc';
+			}
+			else if (dir == 'desc') {
+				// Clear existing glyphs (if present)
+				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+					el.empty();
+				});
+
+				glyph.innerHTML = '\u25bc';
+				dir = 'desc';
+			}
+			else if (glyph.innerHTML == '' || glyph.innerHTML == '\u25bc') {
+				// Clear existing glyphs (if present)
+				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+					el.empty();
+				});
+
+				glyph.innerHTML = '\u25b2';
+				dir = 'asc';
 			}
 			else {
 				// Clear existing glyphs (if present)
@@ -195,7 +215,7 @@
 				});
 
 				glyph.innerHTML = '\u25bc';
-				var dir = 'desc';
+				dir = 'desc';
 			}
 
 			var bugIDs = Object.keys(obugger.bugList[list]);
@@ -217,14 +237,12 @@
 				case 'bugID':
 					if (dir == 'asc') {
 						bugIDs.sort(function(a, b) {
-							if (obugger.bugList[list][a].bugID < obugger.bugList[list][b].bugID) return -1;
-							else return 1;
+							return obugger.bugList[list][a].bugID - obugger.bugList[list][b].bugID;
 						});
 					}
 					if (dir == 'desc') {
 						bugIDs.sort(function(a, b) {
-							if (obugger.bugList[list][a].bugID < obugger.bugList[list][b].bugID) return 1;
-							else return -1;
+							return obugger.bugList[list][b].bugID - obugger.bugList[list][a].bugID;
 						});
 					}
 				break;
@@ -254,28 +272,24 @@
 					}
 					if (dir == 'asc') {
 						bugIDs.sort(function(a, b) {
-							if (states[obugger.bugList[list][a].priority] < states[obugger.bugList[list][b].priority]) return -1;
-							else return 1;
+							return states[obugger.bugList[list][a].priority] - states[obugger.bugList[list][b].priority];
 						});
 					}
 					if (dir == 'desc') {
 						bugIDs.sort(function(a, b) {
-							if (states[obugger.bugList[list][a].priority] < states[obugger.bugList[list][b].priority]) return 1;
-							else return -1;
+							return states[obugger.bugList[list][b].priority] - states[obugger.bugList[list][a].priority];
 						});
 					}
 				break;
 				case 'fileDate':
 					if (dir == 'asc') {
 						bugIDs.sort(function(a, b) {
-							if (obugger.bugList[list][a].fileDate < obugger.bugList[list][b].fileDate) return -1;
-							else return 1;
+							return obugger.bugList[list][a].fileDate - obugger.bugList[list][b].fileDate;
 						});
 					}
 					if (dir == 'desc') {
 						bugIDs.sort(function(a, b) {
-							if (obugger.bugList[list][a].fileDate < obugger.bugList[list][b].fileDate) return 1;
-							else return -1;
+							return obugger.bugList[list][b].fileDate - obugger.bugList[list][a].fileDate;
 						});
 					}
 				break;
@@ -288,14 +302,12 @@
 					}
 					if (dir == 'asc') {
 						bugIDs.sort(function(a, b) {
-							if (states[obugger.bugList[list][a].state] < states[obugger.bugList[list][b].state]) return -1;
-							else return 1;
+							return states[obugger.bugList[list][a].state] - states[obugger.bugList[list][b].state];
 						});
 					}
 					if (dir == 'desc') {
 						bugIDs.sort(function(a, b) {
-							if (states[obugger.bugList[list][a].state] < states[obugger.bugList[list][b].state]) return 1;
-							else return -1;
+							return states[obugger.bugList[list][b].state] - states[obugger.bugList[list][a].state];
 						});
 					}
 				break;
@@ -310,6 +322,8 @@
 	window.addEvent('domready', function() {
 		// Load the retrieved bugs into the list
 		obugger.loadBugs();
+		obugger.sortBugs('open', 'bugID');
+		obugger.sortBugs('closed', 'bugID');
 
 		// Initiate sorting events
 		$$($('buglist').getElements('th[data-sort]'), $('closed_bugs').getElements('th[data-sort]')).addEvent('click', function() {
@@ -371,17 +385,24 @@
 							$('name').disabled = 0;
 							$('description').disabled = 0;
 							$('priority').disabled = 0;
-							new Element('tr', {
-								html:   '<td class="bugID" onclick="viewBug('+data['bugID']+');">'+data['bugID']+'</td>'+
-									'<td onclick="viewBug('+data['bugID']+');">' + data['name'] + '</td>'+
-									'<td class="state" onclick="viewBug('+data['bugID']+');">Open</td>'+
-									'<td class="priority '+$('priority').value+'" onclick="viewBug('+data['bugID']+');">'+data['priority']+'</td>'+
-									'<td class="assignee" onclick="viewBug('+data['bugID']+');"><span style="color: #ccc">Unassigned</span></td>'+
-									'<td onclick="viewBug('+data['bugID']+');">'+data['date']+'</td>'+
-									'<td class="actions"><a onclick="editBug(' + data['bugID'] + ');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID=' + data['bugID'] + '"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a></td>',
-								'class': data['priority'].replace(" ", "_").toLowerCase(),
-								id: 'bug_'+data['bugID']
-							}).inject('buglist_body', 'top');
+
+							// Add bug to the local bug list
+							var fileDate = new Date().format('%s');
+							obugger.bugList.open[data['bugID']] = {
+								assignedTo: "0",
+								assignee: null,
+								bugID: data['bugID'],
+								description: data['description'],
+								fileDate: fileDate,
+								filedB: obugger.account.username,
+								filedBy: obugger.account.accountID,
+								lastUpdated: fileDate,
+								name: data['name'],
+								priority: data['priority'],
+								state: 'open'
+							}
+							obugger.renderBug(data['bugID'], 'top');
+
 							$('name').value = '';
 							$('description').value = '';
 							$('priority').selectedIndex = 2;
