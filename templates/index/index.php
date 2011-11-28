@@ -112,20 +112,26 @@
 			closed: <?=(htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) ? htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) : '{}')?>
 		},
 		renderBug: function(bugID) {
-			// Given a bug ID, renders it onto the screen
+			// Given a bug ID, renders its row entry into the appropriate list
 			if (obugger.bugList.open[bugID]) { var container = $('buglist_body'); var state = 'open'; }
 			else if (obugger.bugList.closed[bugID]) { var container = $('closed_bugs_body'); var state = 'closed'; }
 			else return;	// Do nothing
 
 			if (state == 'open') {
 				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
+				var pretty_priority = '';
+				var priority_split = obugger.bugList[state][bugID].priority.split('_').each(function(word, index) {
+					pretty_priority += word.charAt(0).toUpperCase()+word.slice(1);
+					if (index == 0) pretty_priority += ' ';
+				});
 				new Element('tr', {
 					id: 'bug_'+bugID,
+					'data-bug-id': bugID,
 					html: 
 						'<td class="bugID">'+bugID+'</td>'+
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
 						'<td class="state">'+obugger.bugList[state][bugID].state.charAt(0).toUpperCase()+obugger.bugList[state][bugID].state.slice(1)+'</td>'+
-						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+obugger.bugList[state][bugID].priority.charAt(0).toUpperCase() + obugger.bugList[state][bugID].priority.slice(1)+'</td>'+
+						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+pretty_priority+'</td>'+
 						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
@@ -137,12 +143,17 @@
 			}
 			else {
 				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
+				var pretty_priority = '';
+				var priority_split = obugger.bugList[state][bugID].priority.split('_').each(function(word, index) {
+					pretty_priority += word.charAt(0).toUpperCase()+word.slice(1);
+					if (index == 0) pretty_priority += ' ';
+				});
 				new Element('tr', {
 					id: 'bug_'+bugID,
 					html: 
 						'<td class="bugID">'+bugID+'</td>'+
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
-						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+obugger.bugList[state][bugID].priority.charAt(0).toUpperCase() + obugger.bugList[state][bugID].priority.slice(1)+'</td>'+
+						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+pretty_priority+'</td>'+
 						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
@@ -308,6 +319,11 @@
 			else return;
 
 			obugger.sortBugs(list, column);
+		});
+
+		// Make bugs clickable
+		$$($('buglist').getElements('tr[data-bug-id]'), $('closed_bugs').getElements('tr[data-bug-id]')).addEvent('click', function() {
+			viewBug(this.getProperty('data-bug-id'));
 		});
 
 		accountID = <?=$params['loggedIn']?>;
