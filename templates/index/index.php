@@ -175,6 +175,8 @@
 			this.clearBugs();
 			if (!list || list == 'open') Array.each(Object.keys(obugger.bugList.open), function(bugID) { obugger.renderBug(bugID); });
 			if (!list || list == 'closed') Array.each(Object.keys(obugger.bugList.closed), function(bugID) { obugger.renderBug(bugID); });
+			obugger.sortBugs('open', 'bugID', 'asc');
+			obugger.sortBugs('closed', 'bugID', 'asc');
 		},
 		sortBugs: function(list, column, dir) {
 			if (list == 'open') listTable = $('buglist');
@@ -322,8 +324,6 @@
 	window.addEvent('domready', function() {
 		// Load the retrieved bugs into the list
 		obugger.loadBugs();
-		obugger.sortBugs('open', 'bugID');
-		obugger.sortBugs('closed', 'bugID');
 
 		// Initiate sorting events
 		$$($('buglist'), $('closed_bugs')).addEvent('click:relay(th[data-sort])', function() {
@@ -374,8 +374,8 @@
 				$('description').disabled = 1;
 				$('priority').disabled = 1;
 				var payload = {};
-				payload.name = encodeURIComponent(htmlEntities($('name').value));
-				payload.description = encodeURIComponent(htmlEntities($('description').value));
+				payload.name = $('name').value;
+				payload.description = $('description').value;
 				payload.priority = $('priority').value;
 				payload.filer = accountID;
 				payload = JSON.encode(payload);
@@ -411,7 +411,7 @@
 							add_form.close();
 						}
 					}
-				}).send('action=newbug&payload='+payload);
+				}).send({action: 'newbug', payload: payload});
 			},
 			onOpen: function() {
 				var addFormName = new OverText('name', {
@@ -477,8 +477,8 @@
 				$('assignee').disabled = 1;
 				$('assignee_search').disabled = 1;
 				var payload = {};
-				payload.name = encodeURIComponent(htmlEntities($('name').value));
-				payload.description = encodeURIComponent(htmlEntities($('description').value));
+				payload.name = $('name').value;
+				payload.description = $('description').value;
 				payload.priority = $('priority').value;
 				payload.bugID = selectedBugID;
 				payload.state = $('state').value;
@@ -512,7 +512,7 @@
 							edit_form.close();
 						}
 					}
-				}).send('action=modifybug&payload='+payload);
+				}).post({action: 'modifybug', payload: payload});
 			},
 			onOpen: function() {
 				new Request.JSON({
