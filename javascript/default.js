@@ -49,7 +49,7 @@ function sortColumnByPriority(table) {
 }
 
 function searchUsersByName(query, element) {
-	if($defined(this.timer)) $clear(this.timer);
+	clearTimeout(this.timer);
 	this.timer = (function() {
 		new Request.JSON({
 			url: '<?=APPLICATION_LINK?>ajax/user.php',
