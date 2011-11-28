@@ -27,6 +27,10 @@ table#buglist, table#closed_bugs {
 	width: 90%;
 }
 
+table#buglist th[data-sort], table#closed_bugs th[data-sort] {
+	cursor: pointer;
+}
+
 table#buglist tr, table#closed_bugs tr {
 	cursor: pointer;
 }
@@ -49,7 +53,8 @@ table#buglist td, table#closed_bugs td {
 	font-size: 11px;
 	padding: 0.5em;
 	overflow: hidden;
-	text-overflow: ellipsis
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	max-width: 600px;
 }
 
@@ -89,10 +94,8 @@ table#buglist td.filedDate, table#closed_bugs td.filedDate {
 	width: 125px;
 }
 
-<?php
-	echo '
 /* States CSS */
-	';
+<?php
 	foreach ($config['priorities'] as $priority) {
 		$priority[0] = strtolower(str_replace(" ", "_", $priority[0]));
 		echo '

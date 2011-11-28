@@ -56,12 +56,13 @@
 
 			if ($_GET['action'] == 'logout') {
 				$auth->logout();
+				$params['loggedIn'] = 0;
 			}
 			else if ($_GET['action'] == 'login') {
 				$user = $auth->login($_POST['username'], $_POST['password']);
 				if ($user) {
 					$params['status'] = 1;
-					$params['loggedIn'] = $auth->isLoggedIn();;
+					$params['loggedIn'] = $auth->isLoggedIn();
 				}
 				else $params['status'] = 0;
 			}
@@ -72,7 +73,7 @@
 			if (in_array('r', $config['security']['anon_access']) || ($params['loggedIn'] == 1 && in_array('r', $config['security']['auth_access']))) {
 				$params['priorities'] = $config['priorities'];
 				$params['states'] = $config['states'];
-				$bugs_list = $bugs->get_bugs();
+				$bugs_list = $bugs->get_bugs(null, 1, 1);
 				$params['bugs'] = $bugs_list['open'];
 				$params['closed_bugs'] = $bugs_list['closed'];
 			}

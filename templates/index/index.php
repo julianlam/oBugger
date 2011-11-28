@@ -1,6 +1,6 @@
 <div class="navbar">
 	<span style="font-size: 10px;">Navigation:</span><br />
-	<a href="?action=showbugs"><img src="<?=IMG_PATH?>buglist.svg" title="Show Buglist" /> Buglist</a> 
+	<a onclick="obugger.loadBugs();"><img src="<?=IMG_PATH?>buglist.svg" title="Show Buglist" /> Buglist</a> 
 	<?php
 		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
 	?>
@@ -21,83 +21,35 @@
 		<table id="buglist">
 			<thead>
 				<tr style="text-align: left;">
-					<th style="width: 50px; text-align: center;">bugID</th>
-					<th style="max-width: 600px;">Name</th>
-					<th style="text-align: center;">State</th>
-					<th style="text-align: center;">Priority</th>
-					<th style="text-align: center;">Assigned To</th>
-					<th style="width: 135px; text-align: center;">Filed Date</th>
+					<th data-sort="bugID" style="width: 50px; text-align: center;">bugID <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="name" style="max-width: 600px;">Name <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="state" style="text-align: center;">State <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="priority" style="text-align: center;">Priority <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="assignee" style="text-align: center;">Assigned To <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="fileDate" style="width: 135px; text-align: center;">Filed Date <span style="font-size: 9px; position: relative; top: -1px"></span></th>
 	';
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '	<th style="width: 60px; text-align: center;">Actions</th>';
 	echo '
 				</tr>
 			</thead>
-			<tbody id="buglist_body">
-	';
-	foreach ($params['bugs'] as $bug) {
-		$bug['priorityCSS'] = strtolower(str_replace(" ", "_", $bug['priority']));
-		echo '
-				<tr id="bug_' . $bug['bugID'] . '">
-					<td class="bugID" onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . stripslashes($bug['name']) . '</td>
-					<td class="state" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['state'])) . '</td>
-					<td class="priority ' . $bug['priorityCSS'] . '" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-					<td class="assignee" onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['assignee']) > 0 ? $bug['assignee'] : '<span style="color: #ccc;">Unassigned</span>') . '</td>
-					<td class="filedDate" onclick="viewBug(' . $bug['bugID'] . ');">' . date("m/d/Y, H:i:s", $bug['fileDate']) . '</td>
-		';
-		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
-			echo '
-					<td class="actions">
-						<a onclick="editBug(' . $bug['bugID'] . ');"><img src="' . IMG_PATH . 'edit.svg" title="Edit Bug" /></a> &nbsp; <a href="?action=closebug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'close.svg" title="Close Bug" /></a>
-					</td>
-			';
-		}
-		echo '
-				</tr>
-		';
-	}
-	echo '
-			</tbody>
+			<tbody id="buglist_body"></tbody>
 		</table>
 
 		<h4>Closed Bugs</h4>
 		<table id="closed_bugs">
 			<thead>
 				<tr style="text-align: left;">
-					<th style="width: 50px; text-align: center;">bugID</th>
-					<th style="max-width: 600px;">Name</th>
-					<th style="text-align: center;">Priority</th>
-					<th style="text-align: center;">Assigned To</th>
-					<th style="width: 135px; text-align: center;">Filed Date</th>
+					<th data-sort="bugID" style="width: 50px; text-align: center;">bugID <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="name" style="max-width: 600px;">Name <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="priority" style="text-align: center;">Priority <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="assignee" style="text-align: center;">Assigned To <span style="font-size: 9px; position: relative; top: -1px"></span></th>
+					<th data-sort="fileDate" style="width: 135px; text-align: center;">Filed Date <span style="font-size: 9px; position: relative; top: -1px"></span></th>
 	';
 	if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) echo '<th style="width: 60px; text-align: center;">Actions</th>';
 	echo '
 				</tr>
 			</thead>
-			<tbody id="closed_bugs_body">
-	';
-	foreach ($params['closed_bugs'] as $bug) {
-		echo '
-				<tr id="bug_' . $bug['bugID'] . '">
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . $bug['bugID'] . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . stripslashes($bug['name']) . '</td>
-					<td class="priority" onclick="viewBug(' . $bug['bugID'] . ');">' . ucwords(str_replace("_", " ", $bug['priority'])) . '</td>
-					<td class="assignee" onclick="viewBug(' . $bug['bugID'] . ');">' . (strlen($bug['assignee']) > 0 ? $bug['assignee'] : '<span style="color: #ccc;">Unassigned</span>') . '</td>
-					<td onclick="viewBug(' . $bug['bugID'] . ');">' . date("m/d/Y, H:i:s", $bug['fileDate']) . '</td>
-		';
-		if (in_array('w', $params['config']['anon_access']) || ($params['loggedIn'] && in_array('w', $params['config']['auth_access']))) {
-			echo '
-					<td class="actions">
-						<a href="?action=reopenbug&bugID=' . $bug['bugID'] . '"><img src="' . IMG_PATH . 'reopen.svg" title="Re-Open Bug" /></a>
-					</td>
-			';
-		}
-		echo '
-				</tr>
-			</tbody>
-		';
-	}
-	echo '
+			<tbody id="closed_bugs_body"></tbody>
 		</table>
 	';
 
@@ -151,7 +103,213 @@
 	var add_form = null;
 	var selectedBugID = 0;
 	var accountID = 0;
+
+	// Bug list rendering functions
+	var obugger = {
+		loggedIn: <?=$params['loggedIn']?>,
+		bugList: {
+			open: <?=(htmlspecialchars(json_encode($params['bugs']), ENT_NOQUOTES) ? htmlspecialchars(json_encode($params['bugs']), ENT_NOQUOTES) : '{}')?>,
+			closed: <?=(htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) ? htmlspecialchars(json_encode($params['closed_bugs']), ENT_NOQUOTES) : '{}')?>
+		},
+		renderBug: function(bugID) {
+			// Given a bug ID, renders it onto the screen
+			if (obugger.bugList.open[bugID]) { var container = $('buglist_body'); var state = 'open'; }
+			else if (obugger.bugList.closed[bugID]) { var container = $('closed_bugs_body'); var state = 'closed'; }
+			else return;	// Do nothing
+
+			if (state == 'open') {
+				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
+				new Element('tr', {
+					id: 'bug_'+bugID,
+					html: 
+						'<td class="bugID">'+bugID+'</td>'+
+						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
+						'<td class="state">'+obugger.bugList[state][bugID].state.charAt(0).toUpperCase()+obugger.bugList[state][bugID].state.slice(1)+'</td>'+
+						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+obugger.bugList[state][bugID].priority.charAt(0).toUpperCase() + obugger.bugList[state][bugID].priority.slice(1)+'</td>'+
+						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
+						'<td class="filedDate">'+fileDate+'</td>'+
+						((obugger.loggedIn) ?
+							'<td class="actions">'+
+								'<a onclick="editBug('+bugID+');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
+							'</td>'
+						:'')
+				}).inject(container, 'bottom');
+			}
+			else {
+				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
+				new Element('tr', {
+					id: 'bug_'+bugID,
+					html: 
+						'<td class="bugID">'+bugID+'</td>'+
+						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
+						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+obugger.bugList[state][bugID].priority.charAt(0).toUpperCase() + obugger.bugList[state][bugID].priority.slice(1)+'</td>'+
+						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
+						'<td class="filedDate">'+fileDate+'</td>'+
+						((obugger.loggedIn) ?
+							'<td class="actions">'+
+								'<a onclick="editBug('+bugID+');"><img src="<?=IMG_PATH?>edit.svg" title="Edit Bug"></a> &nbsp; <a href="?action=closebug&bugID='+bugID+'"><img src="<?=IMG_PATH?>close.svg" title="Close Bug"></a>'+
+							'</td>'
+						:'')
+				}).inject(container, 'bottom');
+			}
+		},
+		clearBugs: function() {
+			$('buglist_body').empty();
+			$('closed_bugs_body').empty();
+		},
+		loadBugs: function(list) {
+			this.clearBugs();
+			if (!list || list == 'open') Array.each(Object.keys(obugger.bugList.open), function(bugID) { obugger.renderBug(bugID); });
+			if (!list || list == 'closed') Array.each(Object.keys(obugger.bugList.closed), function(bugID) { obugger.renderBug(bugID); });
+		},
+		sortBugs: function(list, column) {
+			if (list == 'open') listTable = $('buglist');
+			else listTable = $('closed_bugs');
+
+			var glyph = listTable.getElement('th[data-sort="'+column+'"] span');
+			if (glyph.innerHTML == '' || glyph.innerHTML == '\u25bc') {
+				// Clear existing glyphs (if present)
+				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+					el.empty();
+				});
+
+				glyph.innerHTML = '\u25b2';
+				var dir = 'asc';
+			}
+			else {
+				// Clear existing glyphs (if present)
+				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+					el.empty();
+				});
+
+				glyph.innerHTML = '\u25bc';
+				var dir = 'desc';
+			}
+
+			var bugIDs = Object.keys(obugger.bugList[list]);
+			switch(column) {
+				case 'name':
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a]['name'] < obugger.bugList[list][b]['name']) return -1;
+							else return 1;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a]['name'] < obugger.bugList[list][b]['name']) return 1;
+							else return -1;
+						});
+					}
+				break;
+				case 'bugID':
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].bugID < obugger.bugList[list][b].bugID) return -1;
+							else return 1;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].bugID < obugger.bugList[list][b].bugID) return 1;
+							else return -1;
+						});
+					}
+				break;
+				case 'assignee':
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].assignee < obugger.bugList[list][b].assignee || !obugger.bugList[list][a].assignee) return -1;
+							if (obugger.bugList[list][a].assignee > obugger.bugList[list][b].assignee || !obugger.bugList[list][b].assignee) return 1;
+							else return 0;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].assignee > obugger.bugList[list][b].assignee || !obugger.bugList[list][b].assignee) return -1;
+							if (obugger.bugList[list][a].assignee < obugger.bugList[list][b].assignee || !obugger.bugList[list][a].assignee) return 1;
+							else return -1;
+						});
+					}
+				break;
+				case 'priority':
+					var states = {
+						'very_low': 0,
+						'low': 1,
+						'medium': 2,
+						'high': 3,
+						'critical': 4
+					}
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (states[obugger.bugList[list][a].priority] < states[obugger.bugList[list][b].priority]) return -1;
+							else return 1;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (states[obugger.bugList[list][a].priority] < states[obugger.bugList[list][b].priority]) return 1;
+							else return -1;
+						});
+					}
+				break;
+				case 'fileDate':
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].fileDate < obugger.bugList[list][b].fileDate) return -1;
+							else return 1;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (obugger.bugList[list][a].fileDate < obugger.bugList[list][b].fileDate) return 1;
+							else return -1;
+						});
+					}
+				break;
+				case 'state':
+					var states = {
+						open: 0,
+						confirmed: 1,
+						in_progress: 2,
+						resolved: 3
+					}
+					if (dir == 'asc') {
+						bugIDs.sort(function(a, b) {
+							if (states[obugger.bugList[list][a].state] < states[obugger.bugList[list][b].state]) return -1;
+							else return 1;
+						});
+					}
+					if (dir == 'desc') {
+						bugIDs.sort(function(a, b) {
+							if (states[obugger.bugList[list][a].state] < states[obugger.bugList[list][b].state]) return 1;
+							else return -1;
+						});
+					}
+				break;
+			}
+
+			obugger.clearBugs();
+			Array.each(bugIDs, function(bugID) { obugger.renderBug(bugID); });
+		}
+	}
+
+	// Modals
 	window.addEvent('domready', function() {
+		// Load the retrieved bugs into the list
+		obugger.loadBugs();
+
+		// Initiate sorting events
+		$$($('buglist').getElements('th[data-sort]'), $('closed_bugs').getElements('th[data-sort]')).addEvent('click', function() {
+			var column = this.get('data-sort');
+			var table = this.getParent('table').get('id');
+			if (table == 'buglist') var list = 'open';
+			else if (table == 'closed_bugs') var list = 'closed';
+			else return;
+
+			obugger.sortBugs(list, column);
+		});
+
 		accountID = <?=$params['loggedIn']?>;
 		add_form = new MUX.Dialog({
 			modal: true,

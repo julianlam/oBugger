@@ -3,7 +3,7 @@
 	require_once ROOT_FOLDER . 'lib/markdown/markdown.php';
 
 	class Bugs {
-		public function get_bugs($bugIDs=null, $markdown=1) {
+		public function get_bugs($bugIDs=null, $markdown=1, $keyed=0) {
 			$db = db();
 			if ($bugIDs != null) {
 				if (!is_array($bugIDs)) $bugIDs = array($bugIDs);
@@ -34,6 +34,12 @@
 					for($i=0;$i<$closed_bug_count;$i++) {
 						$closed_bugs[$i]['description'] = Markdown($closed_bugs[$i]['description']);
 					}
+				}
+				if ($keyed == 1) {
+					foreach($open_bugs as $bug) $open_bugs_keyed[$bug['bugID']] = $bug;
+					foreach($closed_bugs as $bug) $closed_bugs_keyed[$bug['bugID']] = $bug;
+					$open_bugs = $open_bugs_keyed;
+					$closed_bugs = $closed_bugs_keyed;
 				}
 
 				return array("open" => $open_bugs, "closed" => $closed_bugs);
