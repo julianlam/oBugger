@@ -150,6 +150,7 @@
 				});
 				new Element('tr', {
 					id: 'bug_'+bugID,
+					'data-bug-id': bugID,
 					html: 
 						'<td class="bugID">'+bugID+'</td>'+
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
