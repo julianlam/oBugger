@@ -153,9 +153,9 @@
 				}).inject(container, 'bottom');
 			}
 		},
-		clearBugs: function() {
-			$('buglist_body').empty();
-			$('closed_bugs_body').empty();
+		clearBugs: function(list) {
+			if (!list || list == 'open') $('buglist_body').empty();
+			if (!list || list == 'closed') $('closed_bugs_body').empty();
 		},
 		loadBugs: function(list) {
 			this.clearBugs();
@@ -289,7 +289,7 @@
 				break;
 			}
 
-			obugger.clearBugs();
+			obugger.clearBugs(list);
 			Array.each(bugIDs, function(bugID) { obugger.renderBug(bugID); });
 		}
 	}
