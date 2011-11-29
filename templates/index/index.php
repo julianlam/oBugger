@@ -179,13 +179,14 @@
 			obugger.sortBugs('closed', 'bugID', 'desc');
 		},
 		sortBugs: function(list, column, dir) {
-			if (list == 'open') listTable = $('buglist');
-			else listTable = $('closed_bugs');
+			if (list == 'open') listTable = '#buglist';
+			else listTable = '#closed_bugs';
 
-			var glyph = listTable.getElement('th[data-sort="'+column+'"] span');
+			var glyph = document.body.getElement(listTable+' th[data-sort="'+column+'"] span');
+			console.log(glyph);
 			if (dir == 'asc') {
 				// Clear existing glyphs (if present)
-				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+				$$(listTable+' th span').each(function(el) {
 					el.empty();
 				});
 
@@ -194,7 +195,7 @@
 			}
 			else if (dir == 'desc') {
 				// Clear existing glyphs (if present)
-				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+				$$(listTable+' th span').each(function(el) {
 					el.empty();
 				});
 
@@ -203,7 +204,7 @@
 			}
 			else if (glyph.innerHTML == '' || glyph.innerHTML == '\u25bc') {
 				// Clear existing glyphs (if present)
-				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+				$$(listTable+' th span').each(function(el) {
 					el.empty();
 				});
 
@@ -212,7 +213,7 @@
 			}
 			else {
 				// Clear existing glyphs (if present)
-				$$($('buglist').getElements('th').getElement('span'), $('closed_bugs').getElements('th').getElement('span')).each(function(el) {
+				$$(listTable+' th span').each(function(el) {
 					el.empty();
 				});
 
@@ -401,7 +402,7 @@
 								filedBy: obugger.account.accountID,
 								lastUpdated: fileDate,
 								name: data['name'],
-								priority: data['priority'],
+								priority: $('priority').value,
 								state: 'open'
 							}
 							obugger.renderBug(data['bugID'], 'top');
