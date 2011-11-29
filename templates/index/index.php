@@ -126,13 +126,18 @@
 					pretty_priority += word.charAt(0).toUpperCase()+word.slice(1);
 					if (index == 0) pretty_priority += ' ';
 				});
+				var pretty_state = '';
+				var priority_state = obugger.bugList[state][bugID].state.split('_').each(function(word, index) {
+					pretty_state += word.charAt(0).toUpperCase()+word.slice(1);
+					if (index == 0) pretty_state += ' ';
+				});
 				new Element('tr', {
 					id: 'bug_'+bugID,
 					'data-bug-id': bugID,
 					html: 
 						'<td class="bugID">'+bugID+'</td>'+
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
-						'<td class="state">'+obugger.bugList[state][bugID].state.charAt(0).toUpperCase()+obugger.bugList[state][bugID].state.slice(1)+'</td>'+
+						'<td class="state">'+pretty_state+'</td>'+
 						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+pretty_priority+'</td>'+
 						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
 						'<td class="filedDate">'+fileDate+'</td>'+

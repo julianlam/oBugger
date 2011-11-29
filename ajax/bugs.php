@@ -24,7 +24,7 @@
 		case 'newbug':
 			$add_bug = $bugs->add_bug($_POST['payload']);
 
-			if ($add_bug['status'] == 1) echo json_encode(array("status" => 1, "comment" => "Bug successfully added", "bugID" => $add_bug['bugID'], "name" => stripslashes($add_bug['name']), "description" => stripslashes($add_bug['description']), "priority" => ucwords(str_replace("_"," ",$add_bug['priority'])), "date" => date('m/d/Y, H:i:s')));
+			if ($add_bug['status'] == 1) echo json_encode(array("status" => 1, "comment" => "Bug successfully added", "bugID" => $add_bug['bugID'], "name" => stripslashes($add_bug['name']), "description" => stripslashes($add_bug['description']), "date" => date('m/d/Y, H:i:s')));
 			else echo json_encode(array("status" => 0, "comment" => "Bug could not be added to database", "dump" => $add_bug['dump']));
 		break;
 		case 'modifybug':
