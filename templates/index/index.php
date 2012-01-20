@@ -118,6 +118,8 @@
 			else if (obugger.bugList.closed[bugID]) { var container = $('closed_bugs_body'); var state = 'closed'; }
 			else return;	// Do nothing
 			if (!location) location = 'bottom';
+                        if (obugger.account.accountID && parseInt(obugger.bugList[state][bugID].assignedTo) == obugger.account.accountID) var myBug = true;
+                        else myBug = false;
 
 			if (state == 'open') {
 				var fileDate = new Date(obugger.bugList[state][bugID].fileDate * 1000).format('%x, %X');
@@ -139,7 +141,7 @@
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
 						'<td class="state">'+pretty_state+'</td>'+
 						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+pretty_priority+'</td>'+
-						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
+						'<td class="assignee">'+(obugger.bugList[state][bugID].assignedTo > 0 ? (myBug ? '<b>' : '') + obugger.bugList[state][bugID].assignee + (myBug ? '</b>' : '') : '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
 							'<td class="actions">'+
@@ -162,7 +164,7 @@
 						'<td class="bugID">'+bugID+'</td>'+
 						'<td>'+obugger.bugList[state][bugID]['name']+'</td>'+
 						'<td class="priority '+obugger.bugList[state][bugID].priority+'">'+pretty_priority+'</td>'+
-						'<td class="assignee">'+(obugger.bugList[state][bugID].assignee || '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
+						'<td class="assignee">'+(obugger.bugList[state][bugID].assignedTo > 0 ? (myBug ? '<b>' : '') + obugger.bugList[state][bugID].assignee + (myBug ? '</b>' : '') : '<span style="color: #ccc;">Unassigned</span>')+'</td>'+
 						'<td class="filedDate">'+fileDate+'</td>'+
 						((obugger.loggedIn) ?
 							'<td class="actions">'+
@@ -188,7 +190,6 @@
 			else listTable = '#closed_bugs';
 
 			var glyph = document.body.getElement(listTable+' th[data-sort="'+column+'"] span');
-			console.log(glyph);
 			if (dir == 'asc') {
 				// Clear existing glyphs (if present)
 				$$(listTable+' th span').each(function(el) {
