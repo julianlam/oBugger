@@ -497,6 +497,12 @@
 					url: '<?=APPLICATION_LINK?>ajax/bugs.php',
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
+							// Parse payload again
+							payload = JSON.decode(payload);
+
+							// Determine bug ownership
+							var myBug = (obugger.account.accountID == payload.assignee ? true : false);
+
 							// Re-enable form
 							$('name').disabled = 0;
 							$('description').disabled = 0;
@@ -511,8 +517,32 @@
 							cells[2].innerHTML = $('state_' + $('state').value).innerHTML;
 							cells[3].set('class', 'priority ' + $('priority').value);
 							cells[3].innerHTML = $('priority_'+$('priority').value).innerHTML;
-							cells[4].innerHTML = ($('assignee').value > 0 ? $('assignee_'+$('assignee').value).innerHTML : '<span style="color: #ccc;">Unassigned</span>');
+							cells[4].innerHTML = ($('assignee').value > 0 ? (myBug ? '<b>' : '') + $('assignee_'+$('assignee').value).innerHTML + (myBug ? '</b>' : '') : '<span style="color: #ccc;">Unassigned</span>');
 
+							// Also update the bug as stored locally
+							if (payload.state != 'closed') {
+								var bugType = 'open';
+								var otherType = 'closed';
+							}
+							else {
+								var bugType = 'closed';
+								var otherType = 'open';
+							}
+							if (!obugger.bugList[bugType][payload.bugID]) {	// If bug is not where I am expecting it...
+								// Bug was closed or re-opened, move to proper object
+								obugger.bugList[otherType][payload.bugID] = Object.clone(obugger.bugList[bugType][payload.bugID]);
+								delete obugger.bugList[bugType][payload.bugID];
+								bugType = otherType;
+							}
+							var bugInfo = obugger.bugList[bugType][payload.bugID];
+							bugInfo.name = payload.name;
+							bugInfo.description = payload.description;
+							bugInfo.priority = payload.priority;
+							bugInfo.state = payload.state;
+							bugInfo.assignedTo = payload.assignee;
+							bugInfo.assignee = ($('assignee').value > 0 ? $('assignee_'+$('assignee').value).innerHTML : null);
+
+							// Reset values in edit modal
 							$('name').value = '';
 							$('description').value = '';
 							$('priority').selectedIndex = 2;
