@@ -551,7 +551,7 @@
 							edit_form.close();
 						}
 					}
-				}).post({action: 'modifybug', payload: payload});
+				}).post({action: 'modifybug', payload: payload, accountID: obugger.account.accountID});
 			},
 			onOpen: function() {
 				new Request.JSON({

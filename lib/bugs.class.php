@@ -19,6 +19,10 @@
 						$bugs[$i]['description'] = Markdown($bugs[$i]['description']);
 					}
 				}
+				if ($keyed == 1) {
+					foreach($bugs as $bug) $keyed_bugs[$bug['bugID']] = $bug;
+					$bugs = $keyed_bugs;
+				}
 				return $bugs;
 			}
 			else {
@@ -61,17 +65,76 @@
 			else return array("status" => 0, "dump" => $status);
 		}
 
-		public function modify_bug($payload) {
+		public function modify_bug($payload, $modifierID) {
 			$db = db();
 			$bug_info = json_decode($payload,true);
+			if ($modifierID != $bug_info['assignedTo']) {
+				$old_info = array_shift($this->get_bugs(array($bug_info['bugID']), 0));
+				$changes = array();
+				foreach($bug_info as $option => $value) {
+					if ($option == 'assignee') $option = 'assignedTo';	// Handling an exception in expected info... grr...
+					if ($value != $old_info[$option]) {
+						$changes[$option]['old'] = $old_info[$option];
+						$changes[$option]['new'] = $value;
+					}
+				}
+			}
 			$modify = $db->run(
 				"UPDATE bugs SET name=:name, description=:description, state=:state, priority=:priority, assignedTo=:assignedTo, lastUpdated=:lastUpdated WHERE bugID=:bugID",
 				array("bugID" => $bug_info['bugID'], ":name" => rawurldecode($bug_info['name']), ":description" => rawurldecode($bug_info['description']), ":state" => $bug_info['state'], ":priority" => $bug_info['priority'], "assignedTo" => $bug_info['assignee'], "lastUpdated" => time())
 			);
 			$status = $db->errorInfo();
 
-			if ($status[0] == '00000') return 1;
+			if ($status[0] == '00000') {
+				if (sizeOf($changes) > 0 && $modifierID != $bug_info['assignedTo']) $this->mail_bug_notif($bug_info['bugID'], $changes);
+				return 1;
+			}
 			else return 0;
+		}
+
+		public function mail_bug_notif($bugID, $changes) {
+			// Necessary library to retrieve user information
+			require '../lib/user.class.php';
+			$bug_info = array_shift($this->get_bugs(array($bugID)));
+			$user = new User();
+			$account = $user->getUserInfo($bug_info['assignedTo']);
+
+			if (strlen($account['email']) > 0) {
+				// Enabling HTML mail
+				$headers  = 'MIME-Version: 1.0' . "\r\n";
+				$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+				$headers .= 'From: oBugger <noreply@' . HOSTNAME . '>' . "\r\n";
+				$to = $bug_info['assignee'] . '<' . $account['email'] . '>';
+				$subject = '[oBugger] Bug #' . $bugID . ' - ' . substr($bug_info['name'], 0, 29) . '...';
+
+				$changes_html = '';
+				foreach($changes as $option => $value) $changes_html .= '<li>' . $option . ': <i>' . $value['old'] . '</i> <strong>was changed to</strong> <i>' . $value['new'] . '</i></li>'; 
+
+				$body = "
+					<body style=\"font-size: 12px; font-size: sans, arial, tahoma, verdana; color: #333;\">
+						<p>
+							{$account['username']},
+						</p>
+						<p>
+							The bug \"{$bug_info['name']}\" was updated, and the following information was changed:
+							<ul>
+								{$changes_html}
+							</ul>
+						</p>
+						<p>
+							You may view this bug here: <a href=\"" . APPLICATION_LINK . "#?bugID={$bugID}\">" . APPLICATION_LINK . "#?bugID={$bugID}</a>
+						</p>
+						<p>
+							You are receiving this email because this bug was modified by someone other than yourself, and you are the user assigned to it.
+						</p>
+						<p>
+							Thanks,<br /><i>oBugger</i>
+						</p>
+					</body>
+				";
+
+				mail($to, $subject, $body, $headers);
+			}
 		}
 	}
 ?>

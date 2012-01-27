@@ -7,6 +7,7 @@
 	define('LIBRARY_PATH', APPLICATION_LINK . "lib/");
 	define('CSS_PATH', APPLICATION_LINK . "css/");
 	define('IMG_PATH', APPLICATION_LINK . "images/");
+	define('HOSTNAME', 'localhost');
 
 	$_DB_CONFIG = array();
 	$_DB_CONFIG['DB_PREFIX'] = "";	// Database Prefix for the database name

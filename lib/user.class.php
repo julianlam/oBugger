@@ -3,13 +3,13 @@
 	include_once 'auth.class.php';
 
 	class User {
-		public function getUserInfo() {
+		public function getUserInfo($accountID=null) {
 			$db = db();
 			$auth = new Auth();
 
-			$accountID = $auth->isLoggedIn();
+			if ($accountID == null) $accountID = $auth->isLoggedIn();
 			if ($accountID > 0) {
-				return $db->run("SELECT accountID, username FROM users WHERE accountID=:accountID", array("accountID" => $accountID))->fetch();
+				return $db->run("SELECT accountID, username, email FROM users WHERE accountID=:accountID", array("accountID" => $accountID))->fetch();
 			}
 		}
 

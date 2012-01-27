@@ -28,7 +28,7 @@
 			else echo json_encode(array("status" => 0, "comment" => "Bug could not be added to database", "dump" => $add_bug['dump']));
 		break;
 		case 'modifybug':
-			$modify_bug = $bugs->modify_bug($_POST['payload']);
+			$modify_bug = $bugs->modify_bug($_POST['payload'], $_POST['accountID']);
 
 			if ($modify_bug) echo json_encode(array("status" => 1, "comment" => "Bug successfully modified"));
 			else echo json_encode(array("status" => 0, "comment" => "Bug could not be modified"));
