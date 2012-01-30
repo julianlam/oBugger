@@ -108,7 +108,11 @@
 				$subject = '[oBugger] Bug #' . $bugID . ' - ' . substr($bug_info['name'], 0, 29) . '...';
 
 				$changes_html = '';
-				foreach($changes as $option => $value) $changes_html .= '<li>' . $option . ': <i>' . $value['old'] . '</i> <strong>was changed to</strong> <i>' . $value['new'] . '</i></li>'; 
+				foreach($changes as $option => $value) {
+					if ($option == 'assignedTo' && $value['old'] == 0) $changes_html .= '<li>You were assigned to this bug</li>';
+					else if ($option == 'assignedTo' && $value['old'] != 0) $changes_html .= '<li>' . $option . ': <i>' . $value['old'] . '</i> <strong>was changed to</strong> <i>' . $value['new'] . '</i> (This is you!)</li>'; 
+					else $changes_html .= '<li>' . $option . ': <i>' . $value['old'] . '</i> <strong>was changed to</strong> <i>' . $value['new'] . '</i></li>'; 
+				}
 
 				$body = "
 					<body style=\"font-size: 12px; font-size: sans, arial, tahoma, verdana; color: #333;\">
