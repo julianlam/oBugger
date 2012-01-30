@@ -68,7 +68,7 @@
 		public function modify_bug($payload, $modifierID) {
 			$db = db();
 			$bug_info = json_decode($payload,true);
-			if ($modifierID != $bug_info['assignedTo']) {
+			if ($modifierID != $bug_info['assignee']) {
 				$old_info = array_shift($this->get_bugs(array($bug_info['bugID']), 0));
 				$changes = array();
 				foreach($bug_info as $option => $value) {
