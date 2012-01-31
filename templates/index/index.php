@@ -614,7 +614,7 @@
 					onSuccess: function(data) {
 						if (data['status'] == 1) {
 							view_bug.content.innerHTML = <?=json_encode($view_bug_html)?>;
-							$('view_bug_desc').innerHTML = data['data']['description'].replace(/\n/g, '<br>').replace(/%0A/g, '<br>');
+							$('view_bug_desc').innerHTML = data['data']['description'];
 							$('view_bug_priority').innerHTML = data['data']['priority_nice'];
 							$('view_bug_state').innerHTML = data['data']['state_nice'];
 							$('view_bug_filer').innerHTML = (data['data']['filedBy'] && data['data']['filedBy'].length > 0 ? data['data']['filedBy'] : 'Unknown');
