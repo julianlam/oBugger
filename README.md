@@ -20,5 +20,6 @@ Installation:
 6. Profit!
 
 Support:
-	1.  [GitHub Project Issue Tracker](https://github.com/julianlam/oBugger/issues)
-	2.  Questions? Send me (Julian Lam) a message bia GitHub
+
+1. [GitHub Project Issue Tracker](https://github.com/julianlam/oBugger/issues)
+2. Questions? Send me (Julian Lam) a message bia GitHub
